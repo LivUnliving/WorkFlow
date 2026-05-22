@@ -1,0 +1,20 @@
+#box {
+    width: 400px;
+    height: 800px;
+    display: flex;
+    align-content: space-evenly;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    box-shadow: 10px 10px 5px 0px rgba(173, 173, 173, 0.3);
+}
+#cadastro button {
+    height: auto;
+    width: auto;
+    outline: none;
+    color: black;
+    background-color: rgba(217, 217, 217, 1);
+    border: none;
+    border-radius: 12px;
+}
