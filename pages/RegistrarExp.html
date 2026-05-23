@@ -3,23 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
     <title>Document</title>
 </head>
 <body>
-    <header>
-        <a href="PerfilFreela.html">
-            <img src="../img/gravity-ui--arrow-left.svg">
-        </a>
-        <h3>Registrar experiência</h4>    
-    </header>
-    <h5>Função</h5>
-    <input type="text" placeholder="Garçom, barista, etc.">
-    <h5>Local</h5>
-    <input type="text" placeholder="Café das rosas, bar esquina, etc.">
-    <h5>Duração</h5>
-    <input type="text" placeholder="2 meses, 1 ano, etc."
-    <a href="ConfirmaExp.html">
-        <button>CONFIRMAR</button>
-    </a>
+    <section id="box">
+        <header>
+            <a href="PerfilFreela.html">
+                <img src="../img/gravity-ui--arrow-left.svg">
+            </a>
+            <h3>Registrar experiência</h4>    
+        </header> 
+        <form id="form" action="" method="POST">
+            <h5>Função</h5>
+            <input type="text" name="funcao"placeholder="Garçom, barista, etc.">
+            <h5>Local</h5>
+            <input type="text" name="local" placeholder="Café das rosas, bar esquina, etc.">
+            <h5>Duração</h5>
+            <input type="text" name="duracao" placeholder="2 meses, 1 ano, etc."
+            <a href="ConfirmaExp.html">
+                <button class="btn" id="submit" type="submit">CONFIRMAR</button>
+            </a>    
+        </form>   
+    </section>
+    
+
+    
 </body>
 </html>
