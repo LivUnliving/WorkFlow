@@ -8,23 +8,23 @@
 </head>
 <body>
     <section id="box">
-        <h3>Login</h3>
-        <H5>E-mail ou nome de usuário</H5>
-        <input type="text">
-        <h5>Senha</h5>
-        <input type="text">
-        <button>ENTRAR</button>
-        <H3>É novo por aqui? Cadastre-se como um dos tipos de usuário abaixo:</H3>
-        <div id="cadastro">
-            <a  href="CadastroEmpresa.html">
-                <button>Empresas</button>
-            </a>
-            <a href="CadastroFreela.html">
-                <button>Freelancers</button>
-            </a>     
-        </div>
-          
+        <h1>Login</h1>
+        <form id="form" action="" method="POST">
+            <h3>E-mail</h3>
+            <input type="text" name="email">
+            <h3>Senha</h3>
+            <input type="password" name="senha">
+            <button class="btn" id="submit" type="submit">ENTRAR</button>
+            <H2 id="txtCadastro">É novo por aqui?<br>Cadastre-se como um<br>dos tipos de usuário abaixo:</H2>
+            <div id="cadastro">
+                <a  href="CadastroEmpresa.html">
+                    <button type="button" class="btn">EMPRESAS</button>
+                </a>
+                <a href="CadastroFreela.html">
+                    <button type="button" class="btn">FREELANCERS</button>
+                </a>     
+            </div>    
+        </form>
     </section>
-    
 </body>
 </html>

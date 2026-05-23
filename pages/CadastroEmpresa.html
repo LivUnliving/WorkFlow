@@ -3,24 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../css/style.css">
     <title>Cadastro</title>
 </head>
 <body>
-    <a href="Login.html">
-        <img src="../img/gravity-ui--arrow-left.svg">
-    </a>
-    <h3>Cadastro para empresas:</h3>
-    <h5>E-mail</h5>
-    <input type="text">
-    <h5>Senha</h5>
-    <input type="text">
-    <h5>Telefone</h5>
-    <input type="text">
-    <h5>Cidade</h5>
-    <input type="text">
-    <h5>CNPJ</h5>
-    <input type="text">
-    <button>ENTRAR</button>
+    <section id="box">
+        <a href="Login.html">
+            <img id="voltar" src="../img/gravity-ui--arrow-left.svg">
+        </a>
+        <h1>Cadastro para empresas:</h1>
+        <form id="form" action="" method="POST">
+        <h3>E-mail</h3>
+        <input type="email">
+        <h3>Senha</h3>
+        <input type="password">
+        <h3>Telefone</h3>
+        <input type="tel">
+        <h3>Cidade</h3>
+        <input type="text">
+        <h3>CNPJ</h3>
+        <input type="number">
+        <button class="btn" id="submit" type="submit">ENTRAR</button>       
+        </form>
+         
+    </section>
+    
 </body>
 </html>
