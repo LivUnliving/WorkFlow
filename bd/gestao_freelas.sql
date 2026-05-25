@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3307
--- Tempo de geração: 21/05/2026 às 22:53
+-- Tempo de geração: 25/05/2026 às 23:17
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -37,6 +37,20 @@ CREATE TABLE `candidaturas` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `experiencias`
+--
+
+CREATE TABLE `experiencias` (
+  `id` int(11) NOT NULL,
+  `freelancer_id` int(11) NOT NULL,
+  `cargo` varchar(50) NOT NULL,
+  `tempo` varchar(30) NOT NULL,
+  `descricao` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `turnos`
 --
 
@@ -46,7 +60,9 @@ CREATE TABLE `turnos` (
   `descricao` varchar(150) NOT NULL,
   `data_turno` date NOT NULL,
   `horario_inicio` time NOT NULL,
-  `valor` float NOT NULL
+  `valor` float NOT NULL,
+  `funcao` varchar(50) NOT NULL,
+  `vagas_necessarias` int(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -60,7 +76,9 @@ CREATE TABLE `usuarios` (
   `nome` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `senha` varchar(200) NOT NULL,
-  `tipo` varchar(15) NOT NULL
+  `tipo` varchar(15) NOT NULL,
+  `codigo_loja` varchar(10) NOT NULL,
+  `status_vinculo` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -72,6 +90,13 @@ CREATE TABLE `usuarios` (
 --
 ALTER TABLE `candidaturas`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Índices de tabela `experiencias`
+--
+ALTER TABLE `experiencias`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `freelancer_id` (`freelancer_id`);
 
 --
 -- Índices de tabela `turnos`
@@ -97,6 +122,12 @@ ALTER TABLE `candidaturas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de tabela `experiencias`
+--
+ALTER TABLE `experiencias`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de tabela `turnos`
 --
 ALTER TABLE `turnos`
@@ -111,6 +142,12 @@ ALTER TABLE `usuarios`
 --
 -- Restrições para tabelas despejadas
 --
+
+--
+-- Restrições para tabelas `experiencias`
+--
+ALTER TABLE `experiencias`
+  ADD CONSTRAINT `experiencias_ibfk_1` FOREIGN KEY (`freelancer_id`) REFERENCES `usuarios` (`id`);
 
 --
 -- Restrições para tabelas `turnos`
