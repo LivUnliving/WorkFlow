@@ -1,0 +1,94 @@
+body{
+    background-color: rgba(180,180,180,0.8);
+    font-family:Arial, Helvetica, sans-serif;
+}  
+a{
+    text-decoration: none;
+}
+header{
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 20px;
+    background-color: rgba(173, 173, 173, 1);
+    flex-shrink: 0;
+}
+header h3{
+    margin-top: 23px;
+}
+#boxperfil {
+    background-color: rgba(236, 236, 236,1);
+    width:90%;
+    max-width:450px;
+    min-height:90vh;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 10px 10px 5px 0px rgba(173, 173, 173, 0.7);
+}
+#boxperfil h1, 
+#boxperfil h3,
+#box h1,
+#box h3{
+    align-self: flex-start;
+}
+#mensagem{
+    width: 100%;
+    font-size: 42px;
+    font-weight:bold;
+    line-height:1.1;
+    padding: 20px;
+    margin-top:10px;
+    margin-bottom:10px;
+    align-self:flex-start;
+}
+main{
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.btn {
+    height: 45px;
+    font-size: 16px;
+    display: block;
+    outline: none;
+    color: black;
+    background-color: rgba(180,180,180,1);
+    border: none;
+    border-radius: 12px;
+    margin: 25px auto;
+    cursor: pointer;
+}
+.btn:hover{
+    transform: scale(1.02);
+    color: rgba(236, 236, 236,1);
+    background-color: rgba(114, 114, 114, 0.7);
+}
+#voltar{
+    width:25px;
+    margin-bottom:20px;
+    position: absolute;
+    top: 25px;
+    left: 25px;
+}
+#btnNovo, #btnVoltar{
+    width:220px;
+    min-height:60px;
+    margin-bottom: 0;
+    margin-top: 5px;
+}
+input{
+    height: 45px;
+    width: 70%;
+    padding: 10px;
+    border: 1px solid;
+    color: black;
+    background-color: rgba(236, 236, 236,1);
+    border-radius: 12px;
+}
+.inputLoja{
+    height: 110px;
+    width: 90%;
+}
