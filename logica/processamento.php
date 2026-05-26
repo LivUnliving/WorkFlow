@@ -87,19 +87,22 @@ if (isset($_POST['btn_criar_turno'])) {
 // ACTION 4: FREELANCER ADICIONANDO EXPERIÊNCIA NO PERFIL
 // ==========================================================
 if (isset($_POST['btn_adicionar_experiencia'])) {
-    $freelancer_id = $_SESSION['usuario_id']; // ID do freela logado
-    $cargo = $_POST['cargo_experiencia'];
-    $tempo = $_POST['tempo_experiencia'];
-    $descricao = $_POST['descricao_experiencia'];
+    $freelancer_id = $_SESSION['usuario_id']; // Puxa o ID seguro da sessão
+    $cargo = $_POST['cargo_experiencia'];     // Puxa a Função digitada
+    $tempo = $_POST['tempo_experiencia'];     // Puxa a Duração digitada
+    
+    // Pegamos o local digitado e montamos uma descrição amigável automaticamente
+    $local = $_POST['local_experiencia'];
+    $descricao = "Trabalhou como " . $cargo . " no estabelecimento " . $local . ".";
 
+    // Envia os 4 dados prontos para a função do banco de dados
     $sucesso = cadastrarExperiencia($freelancer_id, $cargo, $tempo, $descricao);
 
     if ($sucesso) {
-        // Redireciona de volta para o perfil do freelancer
-        header("Location: ../visao/perfil_freela.php?msg=exp_adicionada");
+        // Redireciona para a bela tela de sucesso que sua dupla criou!
+        header("Location: ../visao/ConfirmaExp.php");
         exit();
     } else {
         echo "Erro ao salvar experiência.";
     }
 }
-?>
