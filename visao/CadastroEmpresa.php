@@ -16,9 +16,9 @@
             <h3>Nome da Empresa</h3>
             <input type="text" name="nome_usuario" required>
             <h3>Senha</h3>
-            <input type="email" name="email_usuario" required>
-            <h3>Telefone</h3>
             <input type="password" name="senha_usuario" required>
+            <h3>E-mail</h3>
+            <input type="email" name="email_usuario" required>
             <h3>Criar Código da Loja (Ex: LOJA01)</h3>
             <input type="text" name="codigo_loja" placeholder="Código que seus funcionários usarão" required>
             <h3>Telefone</h3>
