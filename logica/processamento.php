@@ -19,8 +19,8 @@ if (isset($_POST['btn_cadastrar'])) {
     $sucesso = cadastrarUsuario($nome, $email, $senha, $tipo, $codigo_loja);
 
     if ($sucesso) {
-        // Redireciona para o login informando sucesso na URL
-        header("Location: ../visao/login.php?msg=cadastro_sucesso");
+        // Redireciona para o login informando sucesso na URL (Maiúsculo respeitado)
+        header("Location: ../visao/Login.php?msg=cadastro_sucesso");
         exit();
     } else {
         echo "Erro ao salvar o usuário no banco de dados.";
@@ -43,7 +43,7 @@ if (isset($_POST['btn_login'])) {
         // Guarda as informações cruciais do usuário na Sessão ($_SESSION)
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['usuario_nome'] = $usuario['nome'];
-        $_SESSION['usuario_tipo'] = $usuario['tipo'];
+        $_SESSION['usuario_tipo'] = $usuario['tipo']; 
         $_SESSION['usuario_loja'] = $usuario['codigo_loja'];
 
         // Redireciona para a tela inicial baseada no TIPO de usuário
@@ -51,18 +51,17 @@ if (isset($_POST['btn_login'])) {
             header("Location: ../visao/dashboard_dono.php");
             exit();
         } elseif ($usuario['tipo'] == 'freelancer') {
-            header("Location: ../visao/dashboard_freela.php");
+            header("Location: ../visao/PaginaInicialFreela.php");
             exit();
         }
     } else {
-        // Se errar a senha ou e-mail, volta para o login com aviso de erro
-        header("Location: ../visao/login.php?erro=dados_invalidos");
+        header("Location: ../visao/Login.php?erro=dados_invalidos");
         exit();
     }
 }
 
 // ==========================================================
-// ACTION 3: DONO CRIANDO NOVO TURNO (Sem urgência manual)
+// ACTION 3: DONO CRIANDO NOVO TURNO (Automação de vagas)
 // ==========================================================
 if (isset($_POST['btn_criar_turno'])) {
     $empresa_id = $_SESSION['usuario_id']; // ID do dono que está logado
@@ -70,16 +69,24 @@ if (isset($_POST['btn_criar_turno'])) {
     $data_turno = $_POST['data_turno'];
     $horario = $_POST['horario_turno'];
     $valor = $_POST['valor_turno'];
-    $funcao = $_POST['funcao_turno']; // Ex: Garçom, Caixa
-    $vagas_necessarias = $_POST['vagas_turno']; // Nova coluna!
+    $funcao = $_POST['funcao_turno']; 
+    $vagas_necessarias = $_POST['vagas_turno']; // Ex: O dono digita '3'
 
-    $sucesso = inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $funcao, $vagas_necessarias);
+    // CONEXÃO DIRETA PARA ENVIAR AS DUAS COLUNAS
+    $conexao = conectarBD();
+
+    // AUTOMATIZAÇÃO: Inserimos $vagas_necessarias tanto em vagas_necessarias quanto em vagas_disponiveis
+    $sql = "INSERT INTO turnos (empresa_id, descricao, data_turn, horario_inicio, valor, funcao, vagas_necessarias, vagas_disponiveis) 
+            VALUES ('$empresa_id', '$descricao', '$data_turno', '$horario', '$valor', '$funcao', '$vagas_necessarias', '$vagas_necessarias')";
+    
+    $sucesso = mysqli_query($conexao, $sql);
+    mysqli_close($conexao);
 
     if ($sucesso) {
-        header("Location: ../visao/dashboard_dono.php?msg=turno_criado");
+        header("Location: ../visao/dashboard_dono.php?msg=turno_created");
         exit();
     } else {
-        echo "Erro ao criar o turno.";
+        echo "Erro ao criar o turno no banco de dados.";
     }
 }
 
@@ -99,10 +106,38 @@ if (isset($_POST['btn_adicionar_experiencia'])) {
     $sucesso = cadastrarExperiencia($freelancer_id, $cargo, $tempo, $descricao);
 
     if ($sucesso) {
-        // Redireciona para a bela tela de sucesso que sua dupla criou!
+        // Redireciona para a tela de sucesso
         header("Location: ../visao/ConfirmaExp.php");
         exit();
     } else {
         echo "Erro ao salvar experiência.";
     }
 }
+
+// ==========================================================
+// ACTION 5: FREELANCER ACEITANDO UM TURNO (CANDIDATURA)
+// ==========================================================
+if (isset($_POST['btn_aceitar_turno'])) {
+    $turno_id = $_POST['turno_id'];
+    $freelancer_id = $_SESSION['usuario_id'];
+
+    $conexao = conectarBD();
+
+    // 1. Grava o relacionamento N:M na tabela intermediária
+    $sqlCandidatura = "INSERT INTO candidaturas (turno_id, freelancer_id) VALUES ('$turno_id', '$freelancer_id')";
+    $executou = mysqli_query($conexao, $sqlCandidatura);
+
+    if ($executou) {
+        // 2. Decrementa uma vaga disponível no turno atualizado
+        $sqlAtualizaVaga = "UPDATE turnos SET vagas_disponiveis = vagas_disponiveis - 1 WHERE id = '$turno_id'";
+        mysqli_query($conexao, $sqlAtualizaVaga);
+
+        // CORREÇÃO: Adicionado a letra "a" que faltava no final do nome do arquivo
+        header("Location: ../visao/PaginaInicialFreela.php");
+        exit();
+    } else {
+        echo "Erro ao se candidatar ao turno.";
+    }
+    mysqli_close($conexao);
+}
+?>
