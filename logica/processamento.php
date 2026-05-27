@@ -48,7 +48,7 @@ if (isset($_POST['btn_login'])) {
 
         // Redireciona para a tela inicial baseada no TIPO de usuário
         if ($usuario['tipo'] == 'dono') {
-            header("Location: ../visao/dashboard_dono.php");
+            header("Location: ../visao/PaginaInicialDono.php");
             exit();
         } elseif ($usuario['tipo'] == 'freelancer') {
             header("Location: ../visao/PaginaInicialFreela.php");
@@ -83,7 +83,7 @@ if (isset($_POST['btn_criar_turno'])) {
     mysqli_close($conexao);
 
     if ($sucesso) {
-        header("Location: ../visao/dashboard_dono.php?msg=turno_created");
+        header("Location: ../visao/PaginaInicialDono.php?msg=turno_created");
         exit();
     } else {
         echo "Erro ao criar o turno no banco de dados.";
@@ -140,4 +140,28 @@ if (isset($_POST['btn_aceitar_turno'])) {
     }
     mysqli_close($conexao);
 }
-?>
+
+// ==========================================================
+// ACTION 6: DONO VINCULANDO OU ALTERANDO O CÓDIGO DA LOJA
+// ==========================================================
+if (isset($_POST['btn_vincular_loja'])) {
+    $usuario_id = $_SESSION['usuario_id'];
+    $novo_codigo = $_POST['codigo_loja'];
+
+    // ... Código anterior da ACTION 6 igual ...
+    $sqlVinculo = "UPDATE usuarios SET codigo_loja = '$novo_codigo' WHERE id = '$usuario_id'";
+    $executou = mysqli_query($conexao, $sqlVinculo);
+
+    // COLOQUE ISSO AQUI PARA DESCOBRIR O ERRO:
+    if (!$executou) {
+        die("Erro no Banco de Dados: " . mysqli_error($conexao));
+    }
+
+    mysqli_close($conexao);
+
+    if ($executou) {
+        $_SESSION['usuario_loja'] = $novo_codigo;
+        header("Location: ../visao/ConfirmaNovaLoja.php");
+        exit();
+    }
+}

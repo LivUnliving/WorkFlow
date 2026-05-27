@@ -27,7 +27,7 @@ if (!isset($_SESSION['usuario_id'])) {
         <main>
             <h1 id="mensagem">Solicitação enviada!<br>Aguarde a verificação do<br>sistema sobre sua loja!</h1>
             
-            <a href="dashboard_dono.php">
+            <a href="PaginaInicialDono.php">
                 <button class="btn" id="btnNovo">VOLTAR AO PAINEL</button>
             </a>
             <a href="NovaLoja.php">

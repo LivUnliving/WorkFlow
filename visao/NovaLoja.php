@@ -19,7 +19,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
 <body>
     <section id="boxperfil">
         <header>
-            <a href="dashboard_dono.php">
+            <a href="PaginaInicialDono.php">
                 <img src="../img/gravity-ui--arrow-left.svg">
             </a>
             <h3>Nova loja</h3>    
