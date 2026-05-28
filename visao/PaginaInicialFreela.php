@@ -43,10 +43,10 @@ mysqli_close($conexao);
     <div id="grid">
         <aside id="sidenav">
             <a href="PerfilFreela.php">
-                <img src="../img/qlementine-icons--user-16.svg">    
+                <img src="../imgs/qlementine-icons--user-16.svg">    
             </a>
             <a href="Login.php">
-                <img src="../img/material-symbols--settings.svg">    
+                <img src="../imgs/material-symbols--settings.svg">    
             </a>
         </aside>
         <main>
@@ -88,11 +88,11 @@ mysqli_close($conexao);
                                 <form action="../logica/processamento.php" method="POST" style="display: inline;">
                                     <input type="hidden" name="turno_id" value="<?php echo $turno['id']; ?>">
                                     <button class="btn" id="aceitar" type="submit" name="btn_aceitar_turno">
-                                        <img src="../img/mingcute--check-fill.svg">
+                                        <img src="../imgs/mingcute--check-fill.svg">
                                     </button>
                                 </form>
                                 <button class="btn" id="recusar">
-                                    <img src="../img/boxicons--x-filled.svg">
+                                    <img src="../imgs/boxicons--x-filled.svg">
                                 </button>
                             </div>        
                         </div>

@@ -20,7 +20,7 @@ if (!isset($_SESSION['usuario_id'])) {
     <section id="boxperfil">
         <header>
             <a href="NovaLoja.php">
-                <img src="../img/gravity-ui--arrow-left.svg">
+                <img src="../imgs/gravity-ui--arrow-left.svg">
             </a>
             <h3>Sucesso</h3>
         </header>

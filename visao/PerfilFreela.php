@@ -37,12 +37,12 @@ mysqli_close($conexao);
     <section id="boxperfil">
     <header>
         <a href="dashboard_freela.php">
-            <img src="../img/gravity-ui--arrow-left.svg">
+            <img src="../imgs/gravity-ui--arrow-left.svg">
         </a>
         <h3>Meu perfil</h3>    
     </header>
     <main>
-        <img id="foto" src="../img/qlementine-icons--user-16.svg">
+        <img id="foto" src="../imgs/qlementine-icons--user-16.svg">
         
         <h2 style="text-align: center; margin-top: 10px;"><?php echo $dadosUsuario['nome']; ?></h2>
 

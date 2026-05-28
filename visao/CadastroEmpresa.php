@@ -9,7 +9,7 @@
 <body>
     <section id="box">
         <a href="Login.php">
-            <img id="voltar" src="../img/gravity-ui--arrow-left.svg">
+            <img id="voltar" src="../imgs/gravity-ui--arrow-left.svg">
         </a>
         <h1>Cadastro para empresas:</h1>
         <form id="form" action="../logica/processamento.php" method="POST">

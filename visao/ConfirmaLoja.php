@@ -20,7 +20,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
     <section id="boxperfil">
         <header>
             <a href="CadastrarLoja.php">
-                <img src="../img/gravity-ui--arrow-left.svg">
+                <img src="../imgs/gravity-ui--arrow-left.svg">
             </a>
             <h3>Sucesso</h3>
         </header>

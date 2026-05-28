@@ -10,7 +10,7 @@
     <section id="boxperfil">
         <header>
             <a href="PerfilFreela.php">
-                <img src="../img/gravity-ui--arrow-left.svg">
+                <img src="../imgs/gravity-ui--arrow-left.svg">
             </a>
             <h3>Registrar experiência</h3>    
         </header> 

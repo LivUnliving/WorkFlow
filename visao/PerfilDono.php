@@ -36,13 +36,13 @@ mysqli_close($conexao);
     <section id="boxperfil">
         <header>
             <a href="PaginaInicialDono.php">
-                <img src="../img/gravity-ui--arrow-left.svg">
+                <img src="../imgs/gravity-ui--arrow-left.svg">
             </a>
             <h3>Meu perfil</h3>    
         </header>
         
         <main>
-            <img id="foto" src="../img/qlementine-icons--user-16.svg" alt="Foto de Perfil" style="display: block; margin: 0 auto; width: 80px;">
+            <img id="foto" src="../imgs/qlementine-icons--user-16.svg" alt="Foto de Perfil" style="display: block; margin: 0 auto; width: 80px;">
             
             <h2 style="text-align: center; margin-top: 10px; color: #333;"><?php echo htmlspecialchars($dadosDono['nome']); ?></h2>
             

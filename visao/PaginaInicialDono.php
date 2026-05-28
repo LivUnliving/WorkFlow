@@ -36,13 +36,13 @@ mysqli_close($conexao);
     <div id="grid">
         <aside>
             <a href="./PerfilDono.php">
-                <img src="../img/qlementine-icons--user-16.svg">
+                <img src="../imgs/qlementine-icons--user-16.svg">
             </a>
             <a href="./Funcionarios.php">
-                <img src="../img/prime--users.svg">
+                <img src="../imgs/prime--users.svg">
             </a>
             <a href="./Login.php">
-                <img src="../img/material-symbols--settings.svg">
+                <img src="../imgs/material-symbols--settings.svg">
             </a>
         </aside>
         
