@@ -13,11 +13,10 @@ $codigo_loja = $_SESSION['usuario_loja'];
 
 $conexao = conectarBD();
 
-// 1. SELECT: Turnos criados por esse dono específicos para o dia de HOJE
 $sqlHoje = "SELECT * FROM turnos WHERE empresa_id = '$dono_id' AND data_turno = CURDATE() ORDER BY horario_inicio ASC";
 $listaHoje = mysqli_query($conexao, $sqlHoje);
 
-// 2. SELECT: Próximos turnos (Datas futuras) criados por esse dono
+
 $sqlProximos = "SELECT * FROM turnos WHERE empresa_id = '$dono_id' AND data_turno > CURDATE() ORDER BY data_turno ASC, horario_inicio ASC";
 $listaProximos = mysqli_query($conexao, $sqlProximos);
 
@@ -94,8 +93,8 @@ mysqli_close($conexao);
                 ?>
             </section>
 
-            <a href="./CriarTurno.php" style="align-self: flex-end; margin-top: 20px;">
-                <button class="btn-action" id="aceitar" style="font-size: 28px; color: white; font-weight: bold;">+</button>
+            <a href="./CriarTurno.php">
+                <button class="btn" id="novoTurno" >+</button>
             </a>
         </main>
     </div>

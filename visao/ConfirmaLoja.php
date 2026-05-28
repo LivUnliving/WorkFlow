@@ -28,7 +28,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
             <h1 id="mensagem">Sua empresa foi registrada com sucesso!</h1>
             
             <a href="PaginaInicialDono.php">
-                <button id="btnVoltar" type="button" class="btn">VOLTAR AO PAINEL</button>
+                <button id="btnVoltar" type="button" class="btn">VOLTAR</button>
             </a>
             
             <a href="CadastrarLoja.php">

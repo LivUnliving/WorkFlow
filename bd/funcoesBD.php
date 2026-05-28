@@ -2,7 +2,7 @@
 // bd/funcoesBD.php
 
 function conectarBD() {
-    $conexao = mysqli_connect("localhost", "root", "", "gestao_freelas", 3307);
+    $conexao = mysqli_connect("localhost", "root", "", "gestao_freelas", 3306);
 
     if (!$conexao) {
         die("Falha na conexão com o Banco de Dados: " . mysqli_connect_error());

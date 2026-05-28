@@ -97,6 +97,7 @@ main{
 #form h3{
     margin-top: 18px;
     margin-bottom: 8px;
+    align-items: left;
 }
 #formTurno{
     padding:25px;
@@ -378,7 +379,7 @@ textarea{
 }
 input{
     height: 45px;
-    width: 70%;
+    width: 90%;
     padding: 10px;
     border: 1px solid;
     color: black;
@@ -433,4 +434,9 @@ img{
     position: absolute;
     top: 25px;
     left: 25px;
+}
+.empresas{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
 }

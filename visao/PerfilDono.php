@@ -43,7 +43,6 @@ mysqli_close($conexao);
         
         <main>
             <img id="foto" src="../imgs/qlementine-icons--user-16.svg" alt="Foto de Perfil" style="display: block; margin: 0 auto; width: 80px;">
-            
             <h2 style="text-align: center; margin-top: 10px; color: #333;"><?php echo htmlspecialchars($dadosDono['nome']); ?></h2>
             
             <div class="infoPerfil" style="margin-top: 20px;">
@@ -55,32 +54,29 @@ mysqli_close($conexao);
                 <h3>Código de Vínculo Atual</h3>
                 <p><?php echo !empty($dadosDono['codigo_loja']) ? htmlspecialchars($dadosDono['codigo_loja']) : "Nenhum código gerado"; ?></p>    
             </div>
-
-            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-
-            <div class="linha" style="margin-bottom: 15px;">
-                <h3 style="margin-bottom: 10px;">Meus Estabelecimentos Cadastrados:</h3>
-                
+            <div class="empresas">
+                <div class="linha">
+                    <h3>Meus Estabelecimentos Cadastrados:</h3>
+                    <a href="./CadastrarLoja.php">
+                        <button class="btn" id="perfilbtn">Nova Empresa +</button>
+                    </a>
+                </div>
                 <?php 
-                if (mysqli_num_rows($listaLojas) > 0) {
-                    while ($loja = mysqli_fetch_assoc($listaLojas)) {
-                        ?>
-                        <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 4px solid #28a745;">
-                            <strong style="color: #333;"><?php echo htmlspecialchars($loja['nome']); ?></strong>
-                            <p style="font-size: 13px; color: #666; margin: 3px 0 0 0;">
-                                📍 <?php echo htmlspecialchars($loja['localizacao']); ?> | 📞 <?php echo htmlspecialchars($loja['telefone']); ?>
-                            </p>
-                        </div>
-                        <?php 
+                    if (mysqli_num_rows($listaLojas) > 0) {
+                        while ($loja = mysqli_fetch_assoc($listaLojas)) {
+                            ?>
+                            <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 4px solid #28a745;">
+                                <strong style="color: #333;"><?php echo htmlspecialchars($loja['nome']); ?></strong>
+                                <p style="font-size: 13px; color: #666; margin: 3px 0 0 0;">
+                                    <?php echo htmlspecialchars($loja['localizacao']); ?> |  <?php echo htmlspecialchars($loja['telefone']); ?>
+                                </p>
+                            </div>
+                            <?php 
+                        }
+                    } else {
+                        echo "<p style='color: #aaa; font-style: italic; font-size: 14px;'>Nenhuma empresa física registrada ainda.</p>";
                     }
-                } else {
-                    echo "<p style='color: #aaa; font-style: italic; font-size: 14px;'>Nenhuma empresa física registrada ainda.</p>";
-                }
                 ?>
-                
-                <a href="./CadastrarLoja.php" style="text-decoration: none; display: block; margin-top: 15px;">
-                    <button class="btn" id="perfilbtn" style="width: 100%;">Nova Empresa +</button>
-                </a>
             </div>
         </main>
     </section>

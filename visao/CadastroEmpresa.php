@@ -8,7 +8,7 @@
 </head>
 <body>
     <section id="box">
-        <a href="Login.php">
+        <a href="login.php">
             <img id="voltar" src="../imgs/gravity-ui--arrow-left.svg">
         </a>
         <h1>Cadastro para empresas:</h1>
@@ -19,14 +19,14 @@
             <input type="password" name="senha_usuario" required>
             <h3>E-mail</h3>
             <input type="email" name="email_usuario" required>
-            <h3>Criar Código da Loja (Ex: LOJA01)</h3>
-            <input type="text" name="codigo_loja" placeholder="Código que seus funcionários usarão" required>
+            <h3>Criar Código da Loja (ex:LOJA01)</h3>
+            <input type="text" name="codigo_loja" required>
             <h3>Telefone</h3>
-            <input type="tel" name="telefone_empresa">
+            <input type="text" name="telefone_empresa">
             <h3>Cidade</h3>
             <input type="text" name="cidade_empresa">
             <h3>CNPJ</h3>
-            <input type="number" name="cnpj_usuario">
+            <input type="text" name="cnpj_usuario">
             <input type="hidden" name="tipo_usuario" value="dono">
             <button class="btn" id="submit" type="submit" name="btn_cadastrar">CADASTRAR</button>       
         </form>

@@ -27,13 +27,13 @@
             <input type="text" name="codigo_loja" placeholder="Ex: LOJA01" required>
 
             <h3>Telefone</h3>
-            <input type="tel" name="telefone">
+            <input type="text" name="telefone">
             
             <h3>Cidade</h3>
             <input type="text" name="cidade">
             
             <h3>CPF</h3>
-            <input type="number" name="cpf_usuario">
+            <input type="text" name="cpf_usuario">
             
             <input type="hidden" name="tipo_usuario" value="freelancer">
 

@@ -22,7 +22,7 @@ $codigo_loja = $_SESSION['usuario_loja'];
 <body>
     <section id="boxperfil">
         <header>
-            <a href="paginaInicialEmpresa.html">
+            <a href="paginaInicialDono.html">
                 <img src="../imgs/gravity-ui--arrow-left.svg">
             </a>
             <h3>Criar novo turno</h3>
