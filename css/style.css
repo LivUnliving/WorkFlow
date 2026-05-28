@@ -50,7 +50,11 @@ body{
 a{
     text-decoration: none;
 }
-
+#redefinirSenha{
+    text-decoration: underline;
+    display: block;
+    text-align: center;
+}
 header{
     height: 70px;
     display: flex;
@@ -286,7 +290,9 @@ textarea{
 }
 #perfilbtn{
     height: 35px;
+    width: 110%;
     padding: 0 15px;
+    
 }
 
 #btnExp{

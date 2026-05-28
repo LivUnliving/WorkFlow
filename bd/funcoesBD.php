@@ -415,4 +415,91 @@ function retornarExperienciasDoFreelancer($freelancer_id) {
     mysqli_close($conexao);
     return $resultado;
 }
+
+function criarSolicitacaoRedefinicaoSenha($email) {
+    $conexao = conectarBD();
+    $email = limparTexto($conexao, $email);
+
+    $resultado = mysqli_query($conexao, "SELECT id FROM usuarios WHERE email = '$email' LIMIT 1");
+    $usuario = mysqli_fetch_assoc($resultado);
+
+    if (!$usuario) {
+        mysqli_close($conexao);
+        return false;
+    }
+
+    $usuario_id = (int)$usuario['id'];
+
+    $token = bin2hex(random_bytes(32));
+    $tokenHash = password_hash($token, PASSWORD_DEFAULT);
+    $expiraEm = date('Y-m-d H:i:s', strtotime('+30 minutes'));
+
+    mysqli_query($conexao, "UPDATE redefinicoes_senha SET usado = 1 WHERE usuario_id = '$usuario_id' AND usado = 0");
+
+    $tokenHashSeguro = limparTexto($conexao, $tokenHash);
+
+    $sql = "INSERT INTO redefinicoes_senha (usuario_id, token_hash, expira_em)
+            VALUES ('$usuario_id', '$tokenHashSeguro', '$expiraEm')";
+
+    $sucesso = mysqli_query($conexao, $sql);
+
+    mysqli_close($conexao);
+
+    if (!$sucesso) {
+        return false;
+    }
+
+    return $token;
+}
+
+function buscarSolicitacaoRedefinicaoValida($token) {
+    $conexao = conectarBD();
+
+    $agora = date('Y-m-d H:i:s');
+
+    $sql = "SELECT rs.*, u.email
+            FROM redefinicoes_senha rs
+            INNER JOIN usuarios u ON rs.usuario_id = u.id
+            WHERE rs.usado = 0
+              AND rs.expira_em >= '$agora'
+            ORDER BY rs.id DESC";
+
+    $resultado = mysqli_query($conexao, $sql);
+
+    while ($linha = mysqli_fetch_assoc($resultado)) {
+        if (password_verify($token, $linha['token_hash'])) {
+            mysqli_close($conexao);
+            return $linha;
+        }
+    }
+
+    mysqli_close($conexao);
+    return false;
+}
+
+function redefinirSenhaComToken($token, $novaSenha) {
+    $solicitacao = buscarSolicitacaoRedefinicaoValida($token);
+
+    if (!$solicitacao) {
+        return false;
+    }
+
+    $conexao = conectarBD();
+
+    $usuario_id = (int)$solicitacao['usuario_id'];
+    $solicitacao_id = (int)$solicitacao['id'];
+    $senhaHash = password_hash($novaSenha, PASSWORD_DEFAULT);
+    $senhaHash = limparTexto($conexao, $senhaHash);
+
+    $sqlSenha = "UPDATE usuarios SET senha = '$senhaHash' WHERE id = '$usuario_id'";
+    $atualizouSenha = mysqli_query($conexao, $sqlSenha);
+
+    if ($atualizouSenha) {
+        mysqli_query($conexao, "UPDATE redefinicoes_senha SET usado = 1 WHERE id = '$solicitacao_id'");
+    }
+
+    mysqli_close($conexao);
+
+    return $atualizouSenha;
+}
 ?>

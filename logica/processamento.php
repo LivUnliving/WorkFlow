@@ -202,5 +202,42 @@ if (isset($_POST['btn_aceitar_funcionario']) || isset($_POST['btn_recusar_funcio
     exit();
 }
 
+/* ACTION 9: SOLICITAR REDEFINIÇÃO DE SENHA */
+if (isset($_POST['btn_solicitar_redefinicao'])) {
+    $email = $_POST['email_usuario'] ?? '';
+
+    $token = criarSolicitacaoRedefinicaoSenha($email);
+
+    if ($token) {
+        header("Location: ../visao/RedefinirSenha.php?token=" . urlencode($token));
+        exit();
+    }
+
+    header("Location: ../visao/EsqueciSenha.php?erro=email_nao_encontrado");
+    exit();
+}
+
+/* ACTION 10: REDEFINIR SENHA */
+if (isset($_POST['btn_redefinir_senha'])) {
+    $token = $_POST['token'] ?? '';
+    $novaSenha = $_POST['nova_senha'] ?? '';
+    $confirmarSenha = $_POST['confirmar_senha'] ?? '';
+
+    if ($novaSenha === '' || $novaSenha !== $confirmarSenha) {
+        header("Location: ../visao/RedefinirSenha.php?token=" . urlencode($token) . "&erro=senhas_diferentes");
+        exit();
+    }
+
+    $sucesso = redefinirSenhaComToken($token, $novaSenha);
+
+    if ($sucesso) {
+        header("Location: ../visao/Login.php?msg=senha_redefinida");
+        exit();
+    }
+
+    header("Location: ../visao/EsqueciSenha.php?erro=token_invalido");
+    exit();
+}
+
 header("Location: ../visao/Login.php");
 exit();

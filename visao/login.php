@@ -22,6 +22,12 @@
             </p>
         <?php endif; ?>
 
+        <?php if(isset($_GET['msg']) && $_GET['msg'] == 'senha_redefinida'): ?>
+            <p style="color: #2ecc71; text-align: center; font-weight: bold; font-size: 14px;">
+                Senha redefinida com sucesso! Faça o login.
+            </p>
+        <?php endif; ?>
+
         <form id="form" action="../logica/processamento.php" method="POST">
             
             <h3>E-mail</h3>
@@ -31,6 +37,7 @@
             <input type="password" name="senha_usuario" required>
             
             <button class="btn" id="submit" type="submit" name="btn_login">ENTRAR</button>
+            <a href="EsqueciSenha.php" style="font-size: 14px; text-align: center; display: block; margin-top: 10px;">Esqueci minha senha</a>
             
             <h2 id="txtCadastro">É novo por aqui?<br>Cadastre-se como um<br>dos tipos de usuário abaixo:</h2>
             <div id="cadastro">
