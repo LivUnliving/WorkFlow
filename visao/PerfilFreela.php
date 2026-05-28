@@ -42,7 +42,7 @@ mysqli_close($conexao);
         <h3>Meu perfil</h3>    
     </header>
     <main>
-        <img id="foto" src="../imgs/qlementine-icons--user-16.svg" style="display: block; margin: 0 auto; width: 80px;>
+        <img id="foto" src="../imgs/qlementine-icons--user-16.svg" style="display: block; margin: 0 auto; width: 80px;">
         <h2 style="text-align: center; margin-top: 10px; color: #333;"><?php echo $dadosUsuario['nome']; ?></h2>
         <div class="infoPerfil">
             <h3>Telefone</h3>
