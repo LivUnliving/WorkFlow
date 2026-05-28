@@ -1,13 +1,11 @@
 <?php
 session_start();
 
-// Trava de Segurança de ADS: Só quem está logado como dono vê essa tela de sucesso
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
     header("Location: Login.php");
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -26,14 +24,14 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
         </header>
         <main>
             <h1 id="mensagem">Sua empresa foi registrada com sucesso!</h1>
-            
+
             <a href="PaginaInicialDono.php">
-                <button id="btnVoltar" type="button" class="btn">VOLTAR</button>
+                <button id="btnVoltar" type="button" class="btn">VOLTAR AO PAINEL</button>
             </a>
-            
+
             <a href="CadastrarLoja.php">
                 <button id="btnNovo" type="button" class="btn">REGISTRAR OUTRA EMPRESA</button>
-            </a>        
+            </a>
         </main>
     </section>
 </body>

@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Trava de Segurança: Se não for dono, chuta de volta para o Login
 if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
     header("Location: Login.php");
     exit();
@@ -9,92 +8,60 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
 
 require_once "../bd/funcoesBD.php";
 $dono_id = $_SESSION['usuario_id'];
-$codigo_loja = $_SESSION['usuario_loja'];
-
-$conexao = conectarBD();
-
-$sqlHoje = "SELECT * FROM turnos WHERE empresa_id = '$dono_id' AND data_turno = CURDATE() ORDER BY horario_inicio ASC";
-$listaHoje = mysqli_query($conexao, $sqlHoje);
-
-
-$sqlProximos = "SELECT * FROM turnos WHERE empresa_id = '$dono_id' AND data_turno > CURDATE() ORDER BY data_turno ASC, horario_inicio ASC";
-$listaProximos = mysqli_query($conexao, $sqlProximos);
-
-mysqli_close($conexao);
+$listaTurnos = retornarTurnosDoDono($dono_id);
 ?>
-
 <!DOCTYPE html>
-<html lang="PT-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">    
+    <link rel="stylesheet" href="../css/style.css">
     <title>Painel da Empresa</title>
 </head>
 <body>
     <div id="grid">
         <aside>
-            <a href="./PerfilDono.php">
+            <a href="PerfilDono.php" title="Perfil">
                 <img src="../imgs/qlementine-icons--user-16.svg">
             </a>
-            <a href="./Funcionarios.php">
+            <a href="Funcionarios.php" title="Funcionários">
                 <img src="../imgs/prime--users.svg">
             </a>
-            <a href="./Login.php">
+            <a href="Sair.php" title="Sair">
                 <img src="../imgs/material-symbols--settings.svg">
             </a>
         </aside>
-        
-        <main>
-            <h2>Turnos do dia</h2>
-            <section class="turnos">
-                <?php 
-                if (mysqli_num_rows($listaHoje) > 0) {
-                    while ($turnoHoje = mysqli_fetch_assoc($listaHoje)) {
-                        ?>
-                        <div class="turnoContainer">
-                            <div class="card normal"> <div class="info">
-                                    <h4>Função: <?php echo $turnoHoje['funcao']; ?></h4>
-                                    <p>Horário: <?php echo $turnoHoje['horario_inicio']; ?></p>
-                                    <p>Vagas Restantes: <?php echo $turnoHoje['vagas_disponiveis']; ?> de <?php echo $turnoHoje['vagas_necessarias']; ?></p>
-                                    <p style="font-size: 13px; color: #777; margin-top: 5px;"><?php echo $turnoHoje['descricao']; ?></p>
-                                </div>
-                            </div>    
-                        </div>
-                        <?php 
-                    }
-                } else {
-                    echo "<p style='color: #aaa; font-style: italic;'>Nenhum turno agendado para o dia de hoje.</p>";
-                }
-                ?>
-            </section>
 
-            <h2>Próximos turnos</h2>
+        <main>
+            <h2>Turnos criados</h2>
             <section class="turnos">
-                <?php 
-                if (mysqli_num_rows($listaProximos) > 0) {
-                    while ($turnoProximo = mysqli_fetch_assoc($listaProximos)) {
+                <?php
+                if (mysqli_num_rows($listaTurnos) > 0) {
+                    while ($turno = mysqli_fetch_assoc($listaTurnos)) {
+                        $classeUrgencia = classeUrgenciaTurno($turno['data_turno']);
                         ?>
                         <div class="turnoContainer" style="margin-bottom: 10px;">
-                            <div class="card normal">
+                            <div class="card <?php echo $classeUrgencia; ?>">
                                 <div class="info">
-                                    <h4>Função: <?php echo $turnoProximo['funcao']; ?></h4>
-                                    <p>Data: <?php echo date('d/m/Y', strtotime($turnoProximo['data_turno'])); ?></p>
-                                    <p>Horário: <?php echo $turnoProximo['horario_inicio']; ?></p>
-                                    <p>Vagas Restantes: <?php echo $turnoProximo['vagas_disponiveis']; ?> de <?php echo $turnoProximo['vagas_necessarias']; ?></p>
+                                    <h4>Função: <?php echo htmlspecialchars($turno['funcao']); ?></h4>
+                                    <p>Empresa: <?php echo htmlspecialchars($turno['empresa_nome']); ?></p>
+                                    <p>Data: <?php echo date('d/m/Y', strtotime($turno['data_turno'])); ?></p>
+                                    <p>Horário: <?php echo substr($turno['horario_inicio'], 0, 5); ?></p>
+                                    <p>Vagas restantes: <?php echo (int)$turno['vagas_disponiveis']; ?> de <?php echo (int)$turno['vagas_necessarias']; ?></p>
+                                    <p style="font-size: 13px; color: #777; margin-top: 5px;"><?php echo htmlspecialchars($turno['descricao']); ?></p>
                                 </div>
                             </div>
                         </div>
-                        <?php 
+                        <?php
                     }
                 } else {
-                    echo "<p style='color: #aaa; font-style: italic;'>Nenhum turno futuro cadastrado.</p>";
+                    echo "<p style='color: #777; font-style: italic;'>Nenhum turno cadastrado ainda.</p>";
                 }
                 ?>
             </section>
 
-            <a href="./CriarTurno.php">
-                <button class="btn" id="novoTurno" >+</button>
+            <a href="CriarTurno.php">
+                <button class="btn" id="novoTurno">+</button>
             </a>
         </main>
     </div>

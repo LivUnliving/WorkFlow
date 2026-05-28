@@ -7,197 +7,216 @@ require_once "../bd/funcoesBD.php";
 ========================================================== */
 if (isset($_POST['btn_cadastrar'])) {
 
-    $nome = $_POST['nome_usuario'];
-    $email = $_POST['email_usuario'];
-    $senha = $_POST['senha_usuario'];
-    $tipo = $_POST['tipo_usuario'];
+    $nome = $_POST['nome_usuario'] ?? '';
+    $email = $_POST['email_usuario'] ?? '';
+    $senha = $_POST['senha_usuario'] ?? '';
+    $tipo = $_POST['tipo_usuario'] ?? '';
 
     $cpf = $_POST['cpf_usuario'] ?? '';
     $cnpj = $_POST['cnpj_usuario'] ?? '';
     $codigo_loja = $_POST['codigo_loja'] ?? '';
+    $telefone = $_POST['telefone_usuario'] ?? ($_POST['telefone_empresa'] ?? ($_POST['telefone'] ?? ''));
+    $cidade = $_POST['cidade_usuario'] ?? ($_POST['cidade_empresa'] ?? ($_POST['cidade'] ?? ''));
 
-    $sucesso = cadastrarUsuario($nome, $email, $senha, $tipo, $codigo_loja, $cpf, $cnpj);
+    $usuario = cadastrarUsuario($nome, $email, $senha, $tipo, $codigo_loja, $cpf, $cnpj, $telefone, $cidade);
 
-    if ($sucesso) {
+    if ($usuario) {
+        $_SESSION['usuario_id'] = $usuario['id'];
+        $_SESSION['usuario_nome'] = $nome;
+        $_SESSION['usuario_tipo'] = $tipo;
+        $_SESSION['usuario_loja'] = $usuario['codigo_loja'] ?? '';
 
-        if ($tipo == 'dono') {
-            header("Location: ../visao/ConfirmaLoja.php");
-            exit();
-        } elseif ($tipo == 'freelancer') {
-            header("Location: ../visao/ConfirmaExp.php");
+        if ($tipo === 'dono') {
+            header("Location: ../visao/PaginaInicialDono.php");
             exit();
         }
 
-    } else {
-        die("Erro no cadastro: " . mysqli_error(conectarBD()));
+        header("Location: ../visao/PaginaInicialFreela.php");
+        exit();
     }
-}
 
+    die("Erro no cadastro. Verifique se o e-mail já não está cadastrado.");
+}
 
 /* ==========================================================
    ACTION 2: LOGIN
 ========================================================== */
 if (isset($_POST['btn_login'])) {
 
-    $email = $_POST['email_usuario'];
-    $senha = $_POST['senha_usuario'];
+    $email = $_POST['email_usuario'] ?? '';
+    $senha = $_POST['senha_usuario'] ?? '';
 
     $usuario = buscarUsuarioPorEmail($email);
 
-    if ($usuario && $usuario['senha'] == $senha) {
+    if ($usuario && senhaConfere($senha, $usuario['senha'])) {
 
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['usuario_nome'] = $usuario['nome'];
         $_SESSION['usuario_tipo'] = $usuario['tipo'];
-        $_SESSION['usuario_loja'] = $usuario['codigo_loja'];
-
-        if ($usuario['tipo'] == 'dono') {
+        if ($usuario['tipo'] === 'dono') {
             header("Location: ../visao/PaginaInicialDono.php");
-            exit();
-        } else {
-            header("Location: ../visao/PaginaInicialFreela.php");
             exit();
         }
 
-    } else {
-        header("Location: ../visao/Login.php?erro=dados_invalidos");
+        header("Location: ../visao/PaginaInicialFreela.php");
         exit();
     }
-}
 
+    header("Location: ../visao/Login.php?erro=dados_invalidos");
+    exit();
+}
 
 /* ==========================================================
-   ACTION 3: CRIAR TURNO (CORRIGIDO)
+   ACTION 3: DONO CRIANDO NOVO TURNO
 ========================================================== */
 if (isset($_POST['btn_criar_turno'])) {
+    if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
+        header("Location: ../visao/Login.php");
+        exit();
+    }
 
-    $empresa_id = $_SESSION['usuario_id'];
-    $descricao = $_POST['descricao_turno'];
-    $data_turno = $_POST['data_turno'];
-    $horario = $_POST['horario_turno'];
-    $valor = $_POST['valor_turno'];
-    $funcao = $_POST['funcao_turno'];
-    $vagas = $_POST['vagas_turno'];
+    $dono_id = $_SESSION['usuario_id'];
+    $empresa_id = $_POST['empresa_id'] ?? 0;
+    $descricao = $_POST['descricao'] ?? '';
+    $data_turno = $_POST['data'] ?? '';
+    $horario = $_POST['inicio'] ?? '';
+    $funcao = $_POST['cargo'] ?? '';
+    $valor = $_POST['valor'] ?? '0.00';
+    $funcionarios = $_POST['funcionarios'] ?? [];
+    $vagas = count($funcionarios);
 
-    $conexao = conectarBD();
+    if ($vagas === 0) {
+        die("Selecione pelo menos um freelancer para receber o chamado do turno.");
+    }
 
-    $sql = "INSERT INTO turnos 
-    (empresa_id, descricao, data_turno, horario_inicio, valor, funcao, vagas_necessarias, vagas_disponiveis)
-    VALUES
-    ('$empresa_id', '$descricao', '$data_turno', '$horario', '$valor', '$funcao', '$vagas', '$vagas')";
+    if (!empresaPertenceAoDono($empresa_id, $dono_id)) {
+        die("Empresa inválida para este usuário.");
+    }
 
-    $sucesso = mysqli_query($conexao, $sql);
+    $sucesso = inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $funcao, $vagas, $funcionarios);
 
     if ($sucesso) {
-        mysqli_close($conexao);
         header("Location: ../visao/ConfirmaTurno.php");
         exit();
-    } else {
-        die("Erro ao criar turno: " . mysqli_error($conexao));
     }
-}
 
+    die("Erro ao criar o turno no banco de dados.");
+}
 
 /* ==========================================================
    ACTION 4: EXPERIÊNCIA
 ========================================================== */
 if (isset($_POST['btn_adicionar_experiencia'])) {
+    if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'freelancer') {
+        header("Location: ../visao/Login.php");
+        exit();
+    }
 
     $freelancer_id = $_SESSION['usuario_id'];
-    $cargo = $_POST['cargo_experiencia'];
-    $tempo = $_POST['tempo_experiencia'];
-    $local = $_POST['local_experiencia'];
+    $cargo = $_POST['cargo_experiencia'] ?? '';
+    $tempo = $_POST['tempo_experiencia'] ?? '';
+    $local = $_POST['local_experiencia'] ?? '';
+    $descricaoDigitada = $_POST['descricao_experiencia'] ?? '';
 
-    $descricao = "Trabalhou como $cargo no estabelecimento $local.";
+    $descricao = trim($descricaoDigitada) !== ''
+        ? $descricaoDigitada
+        : "Trabalhou como $cargo no estabelecimento $local.";
 
     $sucesso = cadastrarExperiencia($freelancer_id, $cargo, $tempo, $descricao);
 
     if ($sucesso) {
         header("Location: ../visao/ConfirmaExp.php");
         exit();
-    } else {
-        die("Erro ao salvar experiência.");
     }
+
+    die("Erro ao salvar experiência.");
 }
 
-
 /* ==========================================================
-   ACTION 5: ACEITAR TURNO
+   ACTION 5: FREELANCER CONFIRMA OU RECUSA TURNO
 ========================================================== */
-if (isset($_POST['btn_aceitar_turno'])) {
-
-    $turno_id = $_POST['turno_id'];
-    $freelancer_id = $_SESSION['usuario_id'];
-
-    $conexao = conectarBD();
-
-    $sql = "INSERT INTO candidaturas (turno_id, freelancer_id)
-            VALUES ('$turno_id', '$freelancer_id')";
-
-    $executou = mysqli_query($conexao, $sql);
-
-    if ($executou) {
-
-        mysqli_query($conexao,
-        "UPDATE turnos SET vagas_disponiveis = vagas_disponiveis - 1 WHERE id = '$turno_id'"
-        );
-
-        mysqli_close($conexao);
-
-        header("Location: ../visao/PaginaInicialFreela.php");
+if (isset($_POST['btn_aceitar_turno']) || isset($_POST['btn_recusar_turno'])) {
+    if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'freelancer') {
+        header("Location: ../visao/Login.php");
         exit();
-
-    } else {
-        die("Erro candidatura: " . mysqli_error($conexao));
     }
+
+    $turno_id = $_POST['turno_id'] ?? 0;
+    $freelancer_id = $_SESSION['usuario_id'];
+    $status = isset($_POST['btn_aceitar_turno']) ? 'Confirmado' : 'Recusado';
+
+    responderTurno($turno_id, $freelancer_id, $status);
+
+    header("Location: ../visao/PaginaInicialFreela.php");
+    exit();
 }
 
-
 /* ==========================================================
-   ACTION 6: VINCULAR LOJA
+   ACTION 6: FREELANCER SOLICITA VÍNCULO COM EMPRESA
 ========================================================== */
 if (isset($_POST['btn_vincular_loja'])) {
+    if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'freelancer') {
+        header("Location: ../visao/Login.php");
+        exit();
+    }
 
     $usuario_id = $_SESSION['usuario_id'];
-    $novo_codigo = $_POST['codigo_loja'];
+    $novo_codigo = $_POST['codigo_loja'] ?? '';
 
-    $conexao = conectarBD();
-
-    $sql = "UPDATE usuarios SET codigo_loja = '$novo_codigo' WHERE id = '$usuario_id'";
-    $executou = mysqli_query($conexao, $sql);
+    $executou = candidatarFreelancerEmpresa($usuario_id, $novo_codigo);
 
     if ($executou) {
-
-        $_SESSION['usuario_loja'] = $novo_codigo;
-
-        mysqli_close($conexao);
-
         header("Location: ../visao/ConfirmaNovaLoja.php");
         exit();
-
-    } else {
-        die("Erro ao atualizar loja: " . mysqli_error($conexao));
     }
+
+    die("Não encontramos uma empresa com esse código. Verifique o código e tente novamente.");
 }
 
-
 /* ==========================================================
-   ACTION 7: CADASTRAR EMPRESA FÍSICA
+   ACTION 7: DONO CADASTRA MAIS UM ESTABELECIMENTO
 ========================================================== */
 if (isset($_POST['btn_adicionar_loja'])) {
+    if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
+        header("Location: ../visao/Login.php");
+        exit();
+    }
 
     $dono_id = $_SESSION['usuario_id'];
-    $nome = $_POST['nome_loja'];
-    $telefone = $_POST['telefone_loja'];
-    $local = $_POST['local_loja'];
-    $cnpj = $_POST['cnpj_loja'];
+    $nome = $_POST['nome_loja'] ?? '';
+    $telefone = $_POST['telefone_loja'] ?? '';
+    $local = $_POST['local_loja'] ?? '';
+    $cnpj = $_POST['cnpj_loja'] ?? '';
+    $codigo = $_POST['codigo_loja'] ?? '';
 
-    $sucesso = cadastrarEmpresaFisica($dono_id, $nome, $telefone, $local, $cnpj);
+    $sucesso = cadastrarEmpresaFisica($dono_id, $nome, $telefone, $local, $cnpj, $codigo);
 
     if ($sucesso) {
         header("Location: ../visao/ConfirmaLoja.php");
         exit();
-    } else {
-        die("Erro no banco ao cadastrar empresa.");
     }
+
+    die("Erro no banco ao cadastrar empresa.");
 }
+
+/* ==========================================================
+   ACTION 8: DONO ACEITA OU RECUSA FREELANCER NA EQUIPE
+========================================================== */
+if (isset($_POST['btn_aceitar_funcionario']) || isset($_POST['btn_recusar_funcionario'])) {
+    if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
+        header("Location: ../visao/Login.php");
+        exit();
+    }
+
+    $vinculo_id = $_POST['vinculo_id'] ?? 0;
+    $dono_id = $_SESSION['usuario_id'];
+    $status = isset($_POST['btn_aceitar_funcionario']) ? 'Aprovado' : 'Recusado';
+
+    alterarStatusVinculoFuncionario($vinculo_id, $dono_id, $status);
+
+    header("Location: ../visao/Funcionarios.php");
+    exit();
+}
+
+header("Location: ../visao/Login.php");
+exit();
