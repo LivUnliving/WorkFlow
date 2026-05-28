@@ -2,9 +2,7 @@
 session_start();
 require_once "../bd/funcoesBD.php";
 
-/* ==========================================================
-   ACTION 1: CADASTRO DE USUÁRIO
-========================================================== */
+/* ACTION 1: CADASTRO DE USUÁRIO */
 if (isset($_POST['btn_cadastrar'])) {
 
     $nome = $_POST['nome_usuario'] ?? '';
@@ -38,9 +36,7 @@ if (isset($_POST['btn_cadastrar'])) {
     die("Erro no cadastro. Verifique se o e-mail já não está cadastrado.");
 }
 
-/* ==========================================================
-   ACTION 2: LOGIN
-========================================================== */
+/* ACTION 2: LOGIN */
 if (isset($_POST['btn_login'])) {
 
     $email = $_POST['email_usuario'] ?? '';
@@ -66,9 +62,7 @@ if (isset($_POST['btn_login'])) {
     exit();
 }
 
-/* ==========================================================
-   ACTION 3: DONO CRIANDO NOVO TURNO
-========================================================== */
+/* ACTION 3: DONO CRIANDO NOVO TURNO */
 if (isset($_POST['btn_criar_turno'])) {
     if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
         header("Location: ../visao/Login.php");
@@ -103,9 +97,7 @@ if (isset($_POST['btn_criar_turno'])) {
     die("Erro ao criar o turno no banco de dados.");
 }
 
-/* ==========================================================
-   ACTION 4: EXPERIÊNCIA
-========================================================== */
+/* ACTION 4: EXPERIÊNCIA */
 if (isset($_POST['btn_adicionar_experiencia'])) {
     if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'freelancer') {
         header("Location: ../visao/Login.php");
@@ -132,9 +124,7 @@ if (isset($_POST['btn_adicionar_experiencia'])) {
     die("Erro ao salvar experiência.");
 }
 
-/* ==========================================================
-   ACTION 5: FREELANCER CONFIRMA OU RECUSA TURNO
-========================================================== */
+/* ACTION 5: FREELANCER CONFIRMA OU RECUSA TURNO */
 if (isset($_POST['btn_aceitar_turno']) || isset($_POST['btn_recusar_turno'])) {
     if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'freelancer') {
         header("Location: ../visao/Login.php");
@@ -151,9 +141,7 @@ if (isset($_POST['btn_aceitar_turno']) || isset($_POST['btn_recusar_turno'])) {
     exit();
 }
 
-/* ==========================================================
-   ACTION 6: FREELANCER SOLICITA VÍNCULO COM EMPRESA
-========================================================== */
+/* ACTION 6: FREELANCER SOLICITA VÍNCULO COM EMPRESA */
 if (isset($_POST['btn_vincular_loja'])) {
     if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'freelancer') {
         header("Location: ../visao/Login.php");
@@ -173,9 +161,7 @@ if (isset($_POST['btn_vincular_loja'])) {
     die("Não encontramos uma empresa com esse código. Verifique o código e tente novamente.");
 }
 
-/* ==========================================================
-   ACTION 7: DONO CADASTRA MAIS UM ESTABELECIMENTO
-========================================================== */
+/* ACTION 7: DONO CADASTRA MAIS UM ESTABELECIMENTO */
 if (isset($_POST['btn_adicionar_loja'])) {
     if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
         header("Location: ../visao/Login.php");
@@ -199,9 +185,7 @@ if (isset($_POST['btn_adicionar_loja'])) {
     die("Erro no banco ao cadastrar empresa.");
 }
 
-/* ==========================================================
-   ACTION 8: DONO ACEITA OU RECUSA FREELANCER NA EQUIPE
-========================================================== */
+/* ACTION 8: DONO ACEITA OU RECUSA FREELANCER NA EQUIPE */
 if (isset($_POST['btn_aceitar_funcionario']) || isset($_POST['btn_recusar_funcionario'])) {
     if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
         header("Location: ../visao/Login.php");
