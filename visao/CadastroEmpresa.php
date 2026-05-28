@@ -26,9 +26,9 @@
             <h3>Cidade</h3>
             <input type="text" name="cidade_empresa">
             <h3>CNPJ</h3>
-            <input type="number" name="cnpj_empresa">
+            <input type="number" name="cnpj_usuario">
             <input type="hidden" name="tipo_usuario" value="dono">
-            <button class="btn" id="submit" type="submit" name="bnt_cadastrar">CADASTRAR</button>       
+            <button class="btn" id="submit" type="submit" name="btn_cadastrar">CADASTRAR</button>       
         </form>
          
     </section>

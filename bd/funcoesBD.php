@@ -1,14 +1,8 @@
 <?php
 // bd/funcoesBD.php
 
-// 1. FUNÇÃO DE CONEXÃO (Configurada para a porta 3307 do XAMPP)
 function conectarBD() {
-    $servidor = "localhost:3307";
-    $usuario = "root";
-    $senha = "";
-    $banco = "gestao_freelas";
-
-    $conexao = mysqli_connect($servidor, $usuario, $senha, $banco);
+    $conexao = mysqli_connect("localhost", "root", "", "gestao_freelas", 3307);
 
     if (!$conexao) {
         die("Falha na conexão com o Banco de Dados: " . mysqli_connect_error());
@@ -18,18 +12,24 @@ function conectarBD() {
 }
 
 // ==========================================
-// MÓDULO: AUTENTICAÇÃO (LOGIN E CADASTRO)
+// MÓDULO: AUTENTICAÇÃO (LOGIN E CADASTRO REVISADO)
 // ==========================================
 
-// Função para cadastrar donos ou freelancers (vínculo pendente por padrão para freelas)
-function cadastrarUsuario($nome, $email, $senha, $tipo, $codigo_loja) {
+// REVISÃO DEFINITIVA: Cadastrar usuários incluindo tratamento de CPF, CNPJ e Status de Vínculo
+function cadastrarUsuario($nome, $email, $senha, $tipo, $codigo_loja, $cpf, $cnpj) {
     $conexao = conectarBD();
     
-    // Se for freelancer, entra na lista de espera ('Pendente'). Se for dono, já entra ativo.
+    // Se for freelancer, entra na lista de espera ('Pendente'). Se for dono, já entra aprovado.
     $status_vinculo = ($tipo == 'freelancer') ? 'Pendente' : 'Aprovado';
     
-    $sql = "INSERT INTO usuarios (nome, email, senha, tipo, codigo_loja, status_vinculo) 
-            VALUES ('$nome', '$email', '$senha', '$tipo', '$codigo_loja', '$status_vinculo')";
+    // Tratamento para salvar NULL estrutural no MySQL caso os campos venham vazios
+    $cpf_valores = !empty($cpf) ? "'$cpf'" : "NULL";
+    $cnpj_valores = !empty($cnpj) ? "'$cnpj'" : "NULL";
+    $loja_valores = !empty($codigo_loja) ? "'$codigo_loja'" : "NULL";
+    
+    // Query alinhada perfeitamente com todas as colunas reais da tabela 'usuarios'
+    $sql = "INSERT INTO usuarios (nome, email, senha, tipo, codigo_loja, status_vinculo, cpf, cnpj) 
+            VALUES ('$nome', '$email', '$senha', '$tipo', $loja_valores, '$status_vinculo', $cpf_valores, $cnpj_valores)";
             
     $resultado = mysqli_query($conexao, $sql);
     mysqli_close($conexao);
@@ -54,11 +54,13 @@ function buscarUsuarioPorEmail($email) {
 // MÓDULO: FLUXO DO DONO DA EMPRESA
 // ==========================================
 
-// Função para o dono criar um turno novo (com limite de vagas, sem urgência manual)
+// REVISÃO DEFINITIVA: Sincronizado com os nomes reais das colunas de turnos do banco e automação de vagas
 function inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $funcao, $vagas_necessarias) {
     $conexao = conectarBD();
-    $sql = "INSERT INTO turnos (empresa_id, descricao, data_turno, horario_inicio, valor, funcao, vagas_necessarias) 
-            VALUES ('$empresa_id', '$descricao', '$data_turno', '$horario', '$valor', '$funcao', '$vagas_necessarias')";
+    
+    // AJUSTE: Mapeado para 'data_turno', 'funcao' (com til) e alimentando automaticamente 'vagas_disponiveis'
+    $sql = "INSERT INTO turnos (empresa_id, descricao, data_turno, horario_inicio, valor, funcao, vagas_necessarias, vagas_disponiveis) 
+            VALUES ('$empresa_id', '$descricao', '$data_turno', '$horario', '$valor', '$funcao', '$vagas_necessarias', '$vagas_necessarias')";
             
     $resultado = mysqli_query($conexao, $sql);
     mysqli_close($conexao);
@@ -68,6 +70,7 @@ function inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $f
 // Listar todos os turnos criados por uma empresa específica
 function retornarTurnosDoDono($empresa_id) {
     $conexao = conectarBD();
+    // AJUSTE: Corrigido para ordenar pela coluna real 'data_turno'
     $sql = "SELECT * FROM turnos WHERE empresa_id = '$empresa_id' ORDER BY data_turno ASC";
     $resultado = mysqli_query($conexao, $sql);
     mysqli_close($conexao);
@@ -133,7 +136,7 @@ function retornarExperienciasDoFreelancer($freelancer_id) {
 // Listar turnos criados na loja em que o freelancer está cadastrado
 function retornarTurnosDisponiveisParaFreela($codigo_loja) {
     $conexao = conectarBD();
-    // Faz um JOIN básico para trazer turnos apenas da empresa que possui o mesmo código de loja do freela
+    // AJUSTE: Corrigido para bater com as colunas físicas reais 'data_turno'
     $sql = "SELECT t.* FROM turnos t 
             JOIN usuarios u ON t.empresa_id = u.id 
             WHERE u.codigo_loja = '$codigo_loja' AND t.data_turno >= CURDATE()
@@ -146,7 +149,7 @@ function retornarTurnosDisponiveisParaFreela($codigo_loja) {
 
 
 // ==========================================
-// MÓDULO: CONTROLO DE VAGAS COMPLETAS (REGRA DO SUMIÇO)
+// MÓDULO: CONTROLE DE VAGAS COMPLETAS (REGRA DO SUMIÇO)
 // ==========================================
 
 // Função auxiliar para contar quantas pessoas confirmaram presença em um turno específico
@@ -162,5 +165,16 @@ function contarVagasPreenchidasNoTurno($turno_id) {
     
     return $dados['total']; // Retorna um número inteiro (ex: 0, 1, 2...)
 }
-?>
 
+// Adicione isso no final do seu funcoesBD.php
+function cadastrarEmpresaFisica($dono_id, $nome, $telefone, $localizacao, $cnpj) {
+    $conexao = conectarBD();
+    
+    $sql = "INSERT INTO empresas (dono_id, nome, telefone, localizacao, cnpj) 
+            VALUES ('$dono_id', '$nome', '$telefone', '$localizacao', '$cnpj')";
+            
+    $resultado = mysqli_query($conexao, $sql);
+    mysqli_close($conexao);
+    return $resultado;
+}
+?>

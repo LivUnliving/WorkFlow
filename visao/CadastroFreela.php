@@ -33,7 +33,7 @@
             <input type="text" name="cidade">
             
             <h3>CPF</h3>
-            <input type="number" name="cpf">
+            <input type="number" name="cpf_usuario">
             
             <input type="hidden" name="tipo_usuario" value="freelancer">
 

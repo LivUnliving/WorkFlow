@@ -6,24 +6,28 @@ session_start();
 require_once "../bd/funcoesBD.php";
 
 // ==========================================================
-// ACTION 1: CADASTRO DE USUÁRIO (DONO OU FREELANCER)
+// ACTION 1: CADASTRO DE USUÁRIO REVISADO (DONO E FREELANCER)
 // ==========================================================
 if (isset($_POST['btn_cadastrar'])) {
     $nome = $_POST['nome_usuario'];
     $email = $_POST['email_usuario'];
     $senha = $_POST['senha_usuario'];
     $tipo = $_POST['tipo_usuario']; // 'dono' ou 'freelancer'
-    $codigo_loja = $_POST['codigo_loja']; // Código de sala/loja para vincular
+    
+    // Captura os novos campos ou define como vazio se não existirem no form atual
+    $cpf = $_POST['cpf_usuario'] ?? '';
+    $cnpj = $_POST['cnpj_usuario'] ?? '';
+    $codigo_loja = $_POST['codigo_loja'] ?? ''; 
 
-    // Executa a função mapeada no funcoesBD.php
-    $sucesso = cadastrarUsuario($nome, $email, $senha, $tipo, $codigo_loja);
+    // Envia todos os dados alinhados para a função do banco
+    $sucesso = cadastrarUsuario($nome, $email, $senha, $tipo, $codigo_loja, $cpf, $cnpj);
 
     if ($sucesso) {
-        // Redireciona para o login informando sucesso na URL (Maiúsculo respeitado)
         header("Location: ../visao/Login.php?msg=cadastro_sucesso");
         exit();
     } else {
-        echo "Erro ao salvar o usuário no banco de dados.";
+        $conexao = conectarBD();
+        die("Erro detectado no cadastro: " . mysqli_error($conexao));
     }
 }
 
@@ -64,29 +68,27 @@ if (isset($_POST['btn_login'])) {
 // ACTION 3: DONO CRIANDO NOVO TURNO (Automação de vagas)
 // ==========================================================
 if (isset($_POST['btn_criar_turno'])) {
-    $empresa_id = $_SESSION['usuario_id']; // ID do dono que está logado
+    $empresa_id = $_SESSION['usuario_id']; // ID do dono que está logado na sessão
     $descricao = $_POST['descricao_turno'];
     $data_turno = $_POST['data_turno'];
     $horario = $_POST['horario_turno'];
     $valor = $_POST['valor_turno'];
     $funcao = $_POST['funcao_turno']; 
-    $vagas_necessarias = $_POST['vagas_turno']; // Ex: O dono digita '3'
+    $vagas_necessarias = $_POST['vagas_turno']; 
 
-    // CONEXÃO DIRETA PARA ENVIAR AS DUAS COLUNAS
     $conexao = conectarBD();
 
-    // AUTOMATIZAÇÃO: Inserimos $vagas_necessarias tanto em vagas_necessarias quanto em vagas_disponiveis
-    $sql = "INSERT INTO turnos (empresa_id, descricao, data_turn, horario_inicio, valor, funcao, vagas_necessarias, vagas_disponiveis) 
+    // Inserção no banco utilizando os nomes reais das suas colunas (com o 'funcao' com til que vimos no phpMyAdmin)
+    $sql = "INSERT INTO turnos (empresa_id, descricao, data_turno, horario_inicio, valor, funcao, vagas_necessarias, vagas_disponiveis) 
             VALUES ('$empresa_id', '$descricao', '$data_turno', '$horario', '$valor', '$funcao', '$vagas_necessarias', '$vagas_necessarias')";
     
-    $sucesso = mysqli_query($conexao, $sql);
-    mysqli_close($conexao);
-
     if ($sucesso) {
-        header("Location: ../visao/PaginaInicialDono.php?msg=turno_created");
+        mysqli_close($conexao);
+        header("Location: ../visao/ConfirmaTurno.php");
         exit();
-    } else {
-        echo "Erro ao criar o turno no banco de dados.";
+    }
+    else {
+    die("Erro ao criar turno: " . mysqli_error($conexao));
     }
 }
 
@@ -163,5 +165,29 @@ if (isset($_POST['btn_vincular_loja'])) {
         $_SESSION['usuario_loja'] = $novo_codigo;
         header("Location: ../visao/ConfirmaNovaLoja.php");
         exit();
+    }
+}
+
+// ==========================================================
+// ACTION 7: CADASTRO DOS DADOS FÍSICOS DA EMPRESA/LOJA
+// ==========================================================
+if (isset($_POST['btn_adicionar_loja'])) {
+    $dono_id = $_SESSION['usuario_id']; // ID do dono logado
+    $nome_loja = $_POST['nome_loja'];
+    $telefone_loja = $_POST['telefone_loja'];
+    $local_loja = $_POST['local_loja'];
+    $cnpj_loja = $_POST['cnpj_loja'];
+
+    // Chama a função nova que criamos no funcoesBD.php
+    $sucesso = cadastrarEmpresaFisica($dono_id, $nome_loja, $telefone_loja, $local_loja, $cnpj_loja);
+
+    if ($sucesso) {
+        // Redireciona para a tela de confirmação de Loja que sua dupla fez!
+        header("Location: ../visao/ConfirmaLoja.php");
+        exit();
+    } else {
+        $conexao = conectarBD();
+        // Isso vai parar o código e mostrar o erro exato na tela em vez de ficar em branco
+        die("Erro detectado no banco: " . mysqli_error($conexao));
     }
 }

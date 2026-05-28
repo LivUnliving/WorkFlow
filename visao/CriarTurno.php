@@ -1,10 +1,23 @@
+<?php
+session_start();
+
+// Trava de Segurança: Se não for dono, chuta de volta para o Login
+if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
+    header("Location: Login.php");
+    exit();
+}
+
+require_once "../bd/funcoesBD.php";
+$dono_id = $_SESSION['usuario_id'];
+$codigo_loja = $_SESSION['usuario_loja'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <title>Document</title>
+    <link rel="stylesheet" href="../css/style.css">    <title>Document</title>
 </head>
 <body>
     <section id="boxperfil">
@@ -14,7 +27,7 @@
             </a>
             <h3>Criar novo turno</h3>
         </header>
-        <form id="formTurno" action="" method="POST">
+        <form id="formTurno" action="../logica/processamento.php" method="POST">
             <div class="campo">
                 <label>Data</label>
                 <input type="date" name="data">
