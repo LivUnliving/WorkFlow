@@ -267,9 +267,7 @@ function retornarEmpresasDoFreelancer($freelancer_id, $status = 'Aprovado') {
     return $resultado;
 }
 
-// ==========================================
-// TURNOS
-// ==========================================
+// TURNOS//
 
 function inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $funcao, $vagas_necessarias, $funcionarios = []) {
     $conexao = conectarBD();
@@ -385,7 +383,11 @@ function classeUrgenciaTurno($data_turno) {
         return 'atencao';
     }
 
-    return 'normal';
+    if ($dias <= 7) {
+        return 'normal';
+    }
+
+    return 'sem_urgencia';
 }
 
 // ==========================================

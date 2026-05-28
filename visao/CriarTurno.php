@@ -95,7 +95,7 @@ $temFuncionarios = mysqli_num_rows($listaFuncionarios) > 0;
                 </div>
             </div>
 
-            <button class="btn" type="submit" name="btn_criar_turno" id="submit" <?php echo (!$temEmpresas || !$temFuncionarios) ? 'disabled' : ''; ?>>Publicar turno</button>
+            <button class="btn" type="submit" name="btn_criar_turno" id="submit" href="PaginaInicialDono.php"<?php echo (!$temEmpresas || !$temFuncionarios) ? 'disabled' : ''; ?>>Publicar turno</button>
         </form>
     </section>
 </body>

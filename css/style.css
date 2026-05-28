@@ -446,3 +446,18 @@ img{
     flex-direction:column;
     gap:12px;
 }
+.card.normal {
+    border-left: 8px solid #2ecc71;
+}
+
+.card.atencao {
+    border-left: 8px solid #f1c40f;
+}
+
+.card.urgente {
+    border-left: 8px solid #e74c3c;
+}
+
+.card.sem_urgencia {
+    border-left: 8px solid #bdbdbd;
+}
