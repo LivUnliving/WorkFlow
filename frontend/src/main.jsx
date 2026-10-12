@@ -4,5 +4,5 @@ import App from './App.jsx';
 import './style.css';
 createRoot(document.getElementById('root')).render(<App />);
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/gestao_freelas/app/sw.js').catch(console.error));
+  window.addEventListener('load', () => navigator.serviceWorker.register('/WorkFlow/app/sw.js').catch(console.error));
 }

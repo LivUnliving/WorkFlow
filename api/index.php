@@ -80,8 +80,12 @@ if (in_array($acao, ['criar_turno','editar_turno','excluir_turno'],true)) {
         foreach (mysqli_fetch_all(mysqli_stmt_get_result($st),MYSQLI_ASSOC) as $linha) $aprovados[]=(int)$linha['freelancer_id'];
         mysqli_close($c);
         if (!$ids || array_diff($ids,$aprovados)) responderJson(['erro'=>'Escolha ao menos um freelancer aprovado para a empresa escolhida.'],400);
-        $descricao=trim($dados['descricao']??'');$funcao=trim($dados['funcao']??'');$data=$dados['data_turno']??'';
-        $hora=$dados['horario_inicio']??'';$valor=(float)($dados['valor']??-1);
+        $descricao=trim($dados['descricao']??'');
+        $funcao=trim($dados['funcao']??'');
+        $data=$dados['data_turno']??'';
+        $hora=$dados['horario_inicio']??'';
+        $horaFim=$dados['horario_fim']??'';
+        $valor=(float)($dados['valor']??-1);
         $d=DateTimeImmutable::createFromFormat('!Y-m-d',$data);
         if (!$d || $d->format('Y-m-d')!==$data || !preg_match('/^([01]\\d|2[0-3]):[0-5]\\d$/', substr($hora,0,5))
             || $descricao==='' || mb_strlen($descricao)>150 || $funcao==='' || mb_strlen($funcao)>50 || $valor<0)

@@ -1,15 +1,15 @@
 {
-  "id":"/gestao_freelas/app/",
+  "id":"/WorkFlow/app/",
   "name":"WorkFlow - Turnos e Equipes",
   "short_name":"WorkFlow",
   "description":"Organizacao de turnos para lojas e freelancers",
-  "start_url":"/gestao_freelas/app/",
-  "scope":"/gestao_freelas/app/",
+  "start_url":"/WorkFlow/app/",
+  "scope":"/WorkFlow/app/",
   "display":"standalone",
   "background_color":"#ececec",
   "theme_color":"#31343b",
   "icons":[
-    {"src":"/gestao_freelas/app/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"/gestao_freelas/app/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {"src":"/WorkFlow/app/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"/WorkFlow/app/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
   ]
 }

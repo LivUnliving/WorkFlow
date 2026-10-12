@@ -1,6 +1,6 @@
 // A API privada e as paginas autenticadas NUNCA entram no cache offline.
 const CACHE='workflow-assets-v1';
-const APP='/gestao_freelas/app/';
+const APP='/WorkFlow/app/';
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll([APP+'icon-192.png',APP+'icon-512.png',APP+'manifest.webmanifest'])));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});
 self.addEventListener('fetch',e=>{

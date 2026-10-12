@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-const API='/gestao_freelas/api/index.php';
-const base='/gestao_freelas/visao/';
+const API='/WorkFlow/api/index.php';
+const base='/WorkFlow/visao/';
 const fmtData=s=>s ? s.slice(0,10).split('-').reverse().join('/') : '';
 const moeda=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const vazio={empresa_id:'',data_turno:'',horario_inicio:'',funcao:'',descricao:'',valor:'',funcionarios:[]};
+const vazio={empresa_id:'',data_turno:'',horario_inicio:'',horario_fim:'',funcao:'',descricao:'',valor:'',funcionarios:[]};
 export default function App(){
   const [dados,setDados]=useState(null),[erro,setErro]=useState(''),[tela,setTela]=useState('turnos');
   const [form,setForm]=useState(vazio),[editando,setEditando]=useState(null),[criando,setCriando]=useState(false);
@@ -23,8 +23,14 @@ export default function App(){
   }
   function campo(k,v){setForm(f=>({...f,[k]:v}));}
   function criar(){setForm({...vazio, empresa_id: String(dados.empresas?.[0]?.id||'')});setEditando(null);setCriando(true);setTela('editar');}
-  function editar(t){setForm({id:t.id,empresa_id:String(t.empresa_id),data_turno:t.data_turno,horario_inicio:t.horario_inicio.slice(0,5),funcao:t.funcao,descricao:t.descricao,valor:t.valor,funcionarios:[]});setEditando(t.id);setCriando(false);setTela('editar');}
-  async function salvar(e){e.preventDefault();const ok=await acao(editando?'editar_turno':'criar_turno',form);if(ok){setTela('turnos');setEditando(null);setCriando(false);}}
+  function editar(t) {setForm({id: t.id,empresa_id: String(t.empresa_id),data_turno: t.data_turno,horario_inicio: t.horario_inicio?.slice(0, 5) || '',horario_fim: t.horario_fim?.slice(0, 5) || '',funcao: t.funcao,descricao: t.descricao,valor: t.valor,funcionarios: []});
+  setEditando(t.id);
+  setCriando(false);
+  setTela('editar');
+  }
+  
+  async function salvar(e) {e.preventDefault(); const ok = await acao(editando ? 'editar_turno' : 'criar_turno',form);
+  if (ok) {setTela('turnos');setEditando(null);setCriando(false);}}
   const dono=dados?.usuario?.tipo==='dono';
   if (!dados) return <div className="espera">Abrindo WorkFlow...</div>;
   if (!dados.usuario) return <main className="login"><section className="painel"><div className="marca">WorkFlow</div><h1>Entrar na sua conta</h1>
@@ -56,7 +62,8 @@ export default function App(){
     {criando&&<label>Loja<select value={form.empresa_id} onChange={e=>{campo('empresa_id',e.target.value);setForm(f=>({...f,empresa_id:e.target.value,funcionarios:[]}));}} required>
       {(dados.empresas||[]).map(e=><option key={e.id} value={e.id}>{e.nome} — {e.codigo_loja}</option>)}</select></label>}
     <label>Data<input type="date" value={form.data_turno} onChange={e=>campo('data_turno',e.target.value)} required/></label>
-    <label>Horário<input type="time" value={form.horario_inicio} onChange={e=>campo('horario_inicio',e.target.value)} required/></label>
+    <label>Horário de entrada<input type="time" value={form.horario_inicio} onChange={e=>campo('horario_inicio',e.target.value)} required/></label>
+    <label>Horário de saída<input type="time" value={form.horario_fim} onChange={e => campo('horario_fim', e.target.value)} required/></label>
     <label>Função<input type="text" maxLength="50" value={form.funcao} onChange={e=>campo('funcao',e.target.value)} required/></label>
     <label>Valor (R$)<input type="number" min="0" step="0.01" value={form.valor} onChange={e=>campo('valor',e.target.value)} required/></label>
     <label>Descrição<textarea maxLength="150" value={form.descricao} onChange={e=>campo('descricao',e.target.value)} required/></label>

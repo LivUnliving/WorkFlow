@@ -78,7 +78,8 @@ if (isset($_POST['btn_criar_turno'])) {
     $empresa_id = $_POST['empresa_id'] ?? 0;
     $descricao = $_POST['descricao'] ?? '';
     $data_turno = $_POST['data'] ?? '';
-    $horario = $_POST['inicio'] ?? '';
+    $horario_inicio = $_POST['inicio'] ?? '';
+    $horario_fim = $_POST['fim'] ?? '';
     $funcao = $_POST['cargo'] ?? '';
     $valor = $_POST['valor'] ?? '0.00';
     $funcionarios = $_POST['funcionarios'] ?? [];
@@ -103,7 +104,7 @@ if (isset($_POST['btn_criar_turno'])) {
         die("Empresa inválida para este usuário.");
     }
 
-    $sucesso = inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $funcao, $vagas, $funcionarios);
+    $sucesso = inserirTurno($empresa_id, $descricao, $data_turno, $horario_inicio, $horario_fim, $valor, $funcao, $vagas, $funcionarios);
 
     if ($sucesso) {
         header("Location: ../visao/ConfirmaTurno.php");

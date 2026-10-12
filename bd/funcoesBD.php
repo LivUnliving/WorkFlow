@@ -269,19 +269,20 @@ function retornarEmpresasDoFreelancer($freelancer_id, $status = 'Aprovado') {
 
 // TURNOS//
 
-function inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $funcao, $vagas_necessarias, $funcionarios = []) {
+function inserirTurno($empresa_id, $descricao, $data_turno, $horario_inicio, $horario_fim, $valor, $funcao, $vagas_necessarias, $funcionarios = []) {
     $conexao = conectarBD();
 
     $empresa_id = (int)$empresa_id;
     $descricao = limparTexto($conexao, $descricao);
     $data_turno = limparTexto($conexao, $data_turno);
-    $horario = limparTexto($conexao, $horario);
+    $horario_inicio = limparTexto($conexao, $horario_inicio);
+    $horario_fim = limparTexto($conexao, $horario_fim);
     $valor = (float)$valor;
     $funcao = limparTexto($conexao, $funcao);
     $vagas_necessarias = (int)$vagas_necessarias;
 
-    $sql = "INSERT INTO turnos (empresa_id, descricao, data_turno, horario_inicio, valor, funcao, vagas_necessarias, vagas_disponiveis)
-            VALUES ('$empresa_id', '$descricao', '$data_turno', '$horario', '$valor', '$funcao', '$vagas_necessarias', '$vagas_necessarias')";
+    $sql = "INSERT INTO turnos (empresa_id, descricao, data_turno, horario_inicio, horario_fim, valor, funcao, vagas_necessarias, vagas_disponiveis)
+            VALUES ('$empresa_id', '$descricao', '$data_turno', '$horario_inicio', '$horario_fim', '$valor', '$funcao', '$vagas_necessarias', '$vagas_necessarias')";
 
     if (!mysqli_query($conexao, $sql)) {
         mysqli_close($conexao);
@@ -529,14 +530,16 @@ function atualizarTurnoDoDono($turno_id, $dono_id, $dados) {
     $descricao = trim($dados['descricao'] ?? '');
     $funcao = trim($dados['funcao'] ?? '');
     $data = $dados['data_turno'] ?? '';
-    $hora = $dados['horario_inicio'] ?? '';
+    $hora_inicio = $dados['horario_inicio'] ?? '';
+    $hora_fim = $dados['horario_fim'] ?? '';
     $valor = (float)($dados['valor'] ?? -1);
     $d = DateTimeImmutable::createFromFormat('!Y-m-d', $data);
-    if (!$d || $d->format('Y-m-d') !== $data || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora,0,5))
+    if (!$d || $d->format('Y-m-d') !== $data || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora_inicio,0,5)) || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora_inicio,0,5))
         || $descricao === '' || mb_strlen($descricao)>150 || $funcao === '' || mb_strlen($funcao)>50 || $valor < 0) return false;
+   
     $c = conectarBD();
-    $st = mysqli_prepare($c, 'UPDATE turnos t INNER JOIN empresas e ON e.id=t.empresa_id SET t.descricao=?, t.data_turno=?, t.horario_inicio=?, t.valor=?, t.funcao=? WHERE t.id=? AND e.dono_id=?');
-    mysqli_stmt_bind_param($st, 'sssdsii', $descricao, $data, $hora, $valor, $funcao, $turno_id, $dono_id);
+    $st = mysqli_prepare($c, 'UPDATE turnos t INNER JOIN empresas e ON e.id=t.empresa_id SET t.descricao=?, t.data_turno=?, t.horario_inicio=?, t.horario_fim=?, t.valor=?, t.funcao=? WHERE t.id=? AND e.dono_id=?');
+    mysqli_stmt_bind_param($st, 'sssdsii', $descricao, $data, $hora_inicio, $hora_fim, $valor, $funcao, $turno_id, $dono_id);
     $ok = mysqli_stmt_execute($st);
     if ($ok) {
         $r = mysqli_query($c, 'SELECT freelancer_id FROM candidaturas WHERE turno_id=' . (int)$turno_id);
