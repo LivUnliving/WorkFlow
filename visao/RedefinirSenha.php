@@ -20,7 +20,7 @@ if (!$solicitacao) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=76c42393c7">
     <title>Nova senha</title>
 </head>
 <body>
@@ -41,10 +41,10 @@ if (!$solicitacao) {
             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 
             <h3>Nova senha</h3>
-            <input type="password" name="nova_senha" required>
+            <input type="password" name="nova_senha" required minlength="8">
 
             <h3>Confirmar senha</h3>
-            <input type="password" name="confirmar_senha" required>
+            <input type="password" name="confirmar_senha" required minlength="8">
 
             <button class="btn" id="submit" type="submit" name="btn_redefinir_senha">
                 SALVAR NOVA SENHA

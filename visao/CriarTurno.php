@@ -7,6 +7,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'dono') {
 }
 
 require_once "../bd/funcoesBD.php";
+require_once "../config/seguranca.php";
 $dono_id = $_SESSION['usuario_id'];
 $listaEmpresas = retornarEmpresasDoDono($dono_id);
 $listaFuncionarios = retornarFuncionariosConfirmadosDoDono($dono_id);
@@ -18,7 +19,7 @@ $temFuncionarios = mysqli_num_rows($listaFuncionarios) > 0;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=76c42393c7">
     <title>Criar Novo Turno</title>
 </head>
 <body>
@@ -30,13 +31,14 @@ $temFuncionarios = mysqli_num_rows($listaFuncionarios) > 0;
             <h3>Criar novo turno</h3>
         </header>
         <form id="formTurno" action="../logica/processamento.php" method="POST">
+            <input type="hidden" name="csrf_token" value="<?php echo esc(tokenCsrf()); ?>">
             <div class="campo">
                 <label>Estabelecimento</label>
                 <select name="empresa_id" required style="height: 45px; border-radius: 8px; padding: 10px;">
                     <?php
                     if ($temEmpresas) {
                         while ($empresa = mysqli_fetch_assoc($listaEmpresas)) {
-                            echo "<option value='" . (int)$empresa['id'] . "'>" . htmlspecialchars($empresa['nome']) . " - " . htmlspecialchars($empresa['codigo_loja']) . "</option>";
+                            echo "<option data-codigo='" . htmlspecialchars($empresa['codigo_loja'], ENT_QUOTES, 'UTF-8') . "' value='" . (int)$empresa['id'] . "'>" . htmlspecialchars($empresa['nome']) . " - " . htmlspecialchars($empresa['codigo_loja']) . "</option>";
                         }
                     } else {
                         echo "<option value=''>Cadastre uma empresa primeiro</option>";
@@ -81,7 +83,7 @@ $temFuncionarios = mysqli_num_rows($listaFuncionarios) > 0;
                     if ($temFuncionarios) {
                         while ($funcionario = mysqli_fetch_assoc($listaFuncionarios)) {
                             ?>
-                            <label class="funcionarioCheck">
+                            <label class="funcionarioCheck" data-codigo="<?php echo htmlspecialchars($funcionario['codigo_loja'], ENT_QUOTES, 'UTF-8'); ?>">
                                 <input type="checkbox" name="funcionarios[]" value="<?php echo (int)$funcionario['freelancer_id']; ?>">
                                 <?php echo htmlspecialchars($funcionario['nome']); ?>
                                 <small style="color:#666;">(<?php echo htmlspecialchars($funcionario['empresa_nome']); ?>)</small>
@@ -98,5 +100,18 @@ $temFuncionarios = mysqli_num_rows($listaFuncionarios) > 0;
             <button class="btn" type="submit" name="btn_criar_turno" id="submit" href="PaginaInicialDono.php"<?php echo (!$temEmpresas || !$temFuncionarios) ? 'disabled' : ''; ?>>Publicar turno</button>
         </form>
     </section>
+    <script>
+        const loja = document.querySelector('select[name="empresa_id"]');
+        function filtrarEquipe() {
+            const codigo = loja.selectedOptions[0]?.dataset.codigo || '';
+            document.querySelectorAll('.funcionarioCheck[data-codigo]').forEach(item => {
+                const exibir = item.dataset.codigo === codigo;
+                item.style.display = exibir ? 'flex' : 'none';
+                if (!exibir) item.querySelector('input[type="checkbox"]').checked = false;
+            });
+        }
+        loja.addEventListener('change', filtrarEquipe);
+        filtrarEquipe();
+    </script>
 </body>
 </html>

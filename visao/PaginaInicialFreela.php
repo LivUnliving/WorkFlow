@@ -7,6 +7,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['usuario_tipo'] !== 'freelancer
 }
 
 require_once "../bd/funcoesBD.php";
+$naoLidas = contarNotificacoesNaoLidas((int)$_SESSION['usuario_id']);
 $freelancer_id = $_SESSION['usuario_id'];
 $listaPendentes = retornarTurnosPendentesDoFreelancer($freelancer_id);
 $listaRespondidos = retornarTurnosRespondidosDoFreelancer($freelancer_id);
@@ -16,7 +17,7 @@ $listaRespondidos = retornarTurnosRespondidosDoFreelancer($freelancer_id);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=76c42393c7">
     <title>Painel Freelancer</title>
 </head>
 <body>
@@ -25,8 +26,15 @@ $listaRespondidos = retornarTurnosRespondidosDoFreelancer($freelancer_id);
             <a href="PerfilFreela.php" title="Perfil">
                 <img src="../imgs/qlementine-icons--user-16.svg">
             </a>
-            <a href="Sair.php" title="Sair">
-                <img src="../imgs/material-symbols--settings.svg">
+            <a class="nav-icone" href="Notificacoes.php" title="Notificações" aria-label="Notificações">
+                <img src="../imgs/notificacoes.svg" alt="">
+                <?php if ($naoLidas > 0): ?><span class="nav-contador"><?php echo $naoLidas; ?></span><?php endif; ?>
+            </a>
+            <a class="nav-icone" href="Configuracoes.php" title="Configurações" aria-label="Configurações">
+                <img src="../imgs/material-symbols--settings.svg" alt="">
+            </a>
+            <a class="nav-icone" href="Sair.php" title="Sair" aria-label="Sair">
+                <img src="../imgs/logout.svg" alt="">
             </a>
         </aside>
         <main>

@@ -1,9 +1,10 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=76c42393c7">
     <title>Redefinir senha</title>
 </head>
 <body>
@@ -13,6 +14,11 @@
         </a>
 
         <h1>Redefinir senha</h1>
+        <?php if (isset($_GET['msg']) && $_GET['msg'] === 'enviado'): ?>
+        <p class="aviso">Se o e-mail estiver cadastrado, você receberá um link de redefinição. Verifique sua caixa de entrada.</p>
+        <?php if (!empty($_SESSION['demo_reset_url'])): ?>
+        <p class="aviso"><strong>Modo demonstração local:</strong> <a href="<?php echo htmlspecialchars($_SESSION['demo_reset_url'], ENT_QUOTES, 'UTF-8'); ?>">Abrir link de teste</a>. Desative esse modo antes de publicar.</p>
+        <?php endif; endif; ?>
 
         <?php if (isset($_GET['erro']) && $_GET['erro'] == 'email_nao_encontrado'): ?>
             <p style="color: #ff4d4d; text-align: center; font-weight: bold; font-size: 14px;">

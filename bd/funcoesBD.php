@@ -115,7 +115,7 @@ function senhaConfere($senhaDigitada, $senhaBanco) {
     }
 
     // Mantém compatibilidade com senhas antigas salvas sem criptografia.
-    return $senhaDigitada === $senhaBanco;
+    return !preg_match('/^\$2[aby]\$|^\$argon2/', $senhaBanco) && hash_equals((string)$senhaBanco, (string)$senhaDigitada);
 }
 
 function buscarUsuarioPorId($usuario_id) {
@@ -293,7 +293,10 @@ function inserirTurno($empresa_id, $descricao, $data_turno, $horario, $valor, $f
     foreach ($funcionarios as $freelancer_id) {
         $freelancer_id = (int)$freelancer_id;
         if ($freelancer_id > 0) {
-            mysqli_query($conexao, "INSERT IGNORE INTO candidaturas (turno_id, freelancer_id, status) VALUES ('$turno_id', '$freelancer_id', 'Pendente')");
+            $adicionou = mysqli_query($conexao, "INSERT IGNORE INTO candidaturas (turno_id, freelancer_id, status) VALUES ('$turno_id', '$freelancer_id', 'Pendente')");
+            if ($adicionou && mysqli_affected_rows($conexao) > 0) {
+                registrarNotificacaoComConexao($conexao, $freelancer_id, 'Convite de turno', 'Voce recebeu um novo convite de trabalho.', 'PaginaInicialFreela.php');
+            }
         }
     }
 
@@ -364,6 +367,11 @@ function responderTurno($turno_id, $freelancer_id, $status) {
 
     if ($resultado && $status === 'Confirmado') {
         mysqli_query($conexao, "UPDATE turnos SET vagas_disponiveis = GREATEST(vagas_disponiveis - 1, 0) WHERE id = '$turno_id'");
+    }
+    if ($resultado) {
+        $alvo = mysqli_query($conexao, "SELECT e.dono_id FROM turnos t INNER JOIN empresas e ON e.id=t.empresa_id WHERE t.id='$turno_id' LIMIT 1");
+        $dono = mysqli_fetch_assoc($alvo);
+        if ($dono) registrarNotificacaoComConexao($conexao, (int)$dono['dono_id'], 'Resposta a turno', 'Um freelancer respondeu a um convite: ' . $status, 'PaginaInicialDono.php');
     }
 
     mysqli_close($conexao);
@@ -504,4 +512,68 @@ function redefinirSenhaComToken($token, $novaSenha) {
 
     return $atualizouSenha;
 }
+
+
+// Edição/exclusão: sempre cruzar empresa do turno com o dono autenticado.
+function buscarTurnoDoDono($turno_id, $dono_id) {
+    $c = conectarBD();
+    $sql = 'SELECT t.*, e.nome AS empresa_nome FROM turnos t INNER JOIN empresas e ON e.id=t.empresa_id WHERE t.id=? AND e.dono_id=? LIMIT 1';
+    $st = mysqli_prepare($c, $sql);
+    mysqli_stmt_bind_param($st, 'ii', $turno_id, $dono_id);
+    mysqli_stmt_execute($st);
+    $r = mysqli_fetch_assoc(mysqli_stmt_get_result($st));
+    mysqli_close($c); return $r ?: false;
+}
+function atualizarTurnoDoDono($turno_id, $dono_id, $dados) {
+    if (!buscarTurnoDoDono($turno_id, $dono_id)) return false;
+    $descricao = trim($dados['descricao'] ?? '');
+    $funcao = trim($dados['funcao'] ?? '');
+    $data = $dados['data_turno'] ?? '';
+    $hora = $dados['horario_inicio'] ?? '';
+    $valor = (float)($dados['valor'] ?? -1);
+    $d = DateTimeImmutable::createFromFormat('!Y-m-d', $data);
+    if (!$d || $d->format('Y-m-d') !== $data || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora,0,5))
+        || $descricao === '' || mb_strlen($descricao)>150 || $funcao === '' || mb_strlen($funcao)>50 || $valor < 0) return false;
+    $c = conectarBD();
+    $st = mysqli_prepare($c, 'UPDATE turnos t INNER JOIN empresas e ON e.id=t.empresa_id SET t.descricao=?, t.data_turno=?, t.horario_inicio=?, t.valor=?, t.funcao=? WHERE t.id=? AND e.dono_id=?');
+    mysqli_stmt_bind_param($st, 'sssdsii', $descricao, $data, $hora, $valor, $funcao, $turno_id, $dono_id);
+    $ok = mysqli_stmt_execute($st);
+    if ($ok) {
+        $r = mysqli_query($c, 'SELECT freelancer_id FROM candidaturas WHERE turno_id=' . (int)$turno_id);
+        while ($f = mysqli_fetch_assoc($r)) registrarNotificacaoComConexao($c, (int)$f['freelancer_id'], 'Turno atualizado', 'Os dados de um turno para o qual voce foi convidado foram alterados.', 'PaginaInicialFreela.php');
+    }
+    mysqli_close($c); return $ok;
+}
+function excluirTurnoDoDono($turno_id, $dono_id) {
+    $c = conectarBD();
+    $st = mysqli_prepare($c, 'DELETE t FROM turnos t INNER JOIN empresas e ON e.id=t.empresa_id WHERE t.id=? AND e.dono_id=?');
+    mysqli_stmt_bind_param($st, 'ii', $turno_id, $dono_id);
+    $ok = mysqli_stmt_execute($st) && mysqli_stmt_affected_rows($st) === 1;
+    mysqli_close($c); return $ok;
+}
+function registrarNotificacaoComConexao($c, $usuario_id, $titulo, $mensagem, $link) {
+    $st = mysqli_prepare($c, 'INSERT INTO notificacoes (usuario_id, titulo, mensagem, link) VALUES (?, ?, ?, ?)');
+    mysqli_stmt_bind_param($st, 'isss', $usuario_id, $titulo, $mensagem, $link);
+    return mysqli_stmt_execute($st);
+}
+function registrarNotificacao($usuario_id, $titulo, $mensagem, $link) {
+    $c=conectarBD();$ok=registrarNotificacaoComConexao($c,$usuario_id,$titulo,$mensagem,$link);mysqli_close($c);return $ok;
+}
+function retornarNotificacoes($usuario_id) {
+    $c=conectarBD();
+    $st=mysqli_prepare($c,'SELECT * FROM notificacoes WHERE usuario_id=? ORDER BY criada_em DESC, id DESC LIMIT 60');
+    mysqli_stmt_bind_param($st,'i',$usuario_id);mysqli_stmt_execute($st);
+    $r=mysqli_stmt_get_result($st);$rows=mysqli_fetch_all($r,MYSQLI_ASSOC);mysqli_close($c);return $rows;
+}
+function contarNotificacoesNaoLidas($usuario_id) {
+    $c=conectarBD();$st=mysqli_prepare($c,'SELECT COUNT(*) AS qtd FROM notificacoes WHERE usuario_id=? AND lida=0');
+    mysqli_stmt_bind_param($st,'i',$usuario_id);mysqli_stmt_execute($st);$row=mysqli_fetch_assoc(mysqli_stmt_get_result($st));
+    mysqli_close($c);return (int)$row['qtd'];
+}
+function marcarNotificacaoLida($notificacao_id, $usuario_id) {
+    $c=conectarBD();$st=mysqli_prepare($c,'UPDATE notificacoes SET lida=1 WHERE id=? AND usuario_id=?');
+    mysqli_stmt_bind_param($st,'ii',$notificacao_id,$usuario_id);$ok=mysqli_stmt_execute($st);mysqli_close($c);return $ok;
+}
+function listarTurnosDoDonoArray($dono_id) {return mysqli_fetch_all(retornarTurnosDoDono($dono_id), MYSQLI_ASSOC);}
+
 ?>

@@ -5,13 +5,14 @@ CREATE DATABASE IF NOT EXISTS `gestao_freelas` DEFAULT CHARACTER SET utf8mb4 COL
 USE `gestao_freelas`;
 
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS `notificacoes`;
+DROP TABLE IF EXISTS `redefinicoes_senha`;
 DROP TABLE IF EXISTS `candidaturas`;
 DROP TABLE IF EXISTS `turnos`;
 DROP TABLE IF EXISTS `experiencias`;
 DROP TABLE IF EXISTS `usuario_empresas`;
 DROP TABLE IF EXISTS `empresas`;
 DROP TABLE IF EXISTS `usuarios`;
-DROP TABLE IF EXISTS `usuario_empresas`;
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE `usuarios` (
@@ -96,15 +97,25 @@ CREATE TABLE `candidaturas` (
   CONSTRAINT `candidaturas_ibfk_2` FOREIGN KEY (`freelancer_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE `usuario_empresas` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `empresa_id` int(11) NOT NULL,
-  `freelancer_id` int(11) NOT NULL,
-  `status` enum('Pendente','Aprovado','Recusado') NOT NULL DEFAULT 'Pendente',
-  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `usuario_empresa_unico` (`empresa_id`, `freelancer_id`),
-  KEY `freelancer_id` (`freelancer_id`),
-  CONSTRAINT `usuario_empresas_ibfk_1` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `usuario_empresas_ibfk_2` FOREIGN KEY (`freelancer_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE IF NOT EXISTS `redefinicoes_senha` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `usuario_id` int NOT NULL,
+  `token_hash` varchar(255) NOT NULL,
+  `expira_em` datetime NOT NULL,
+  `usado` tinyint(1) NOT NULL DEFAULT 0,
+  `criado_em` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX (`usuario_id`),
+  CONSTRAINT `fk_redef_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `notificacoes` (
+  `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `usuario_id` int NOT NULL,
+  `titulo` varchar(120) NOT NULL,
+  `mensagem` varchar(255) NOT NULL,
+  `link` varchar(160) NOT NULL,
+  `lida` tinyint(1) NOT NULL DEFAULT 0,
+  `criada_em` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX (`usuario_id`, `lida`),
+  CONSTRAINT `fk_notif_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

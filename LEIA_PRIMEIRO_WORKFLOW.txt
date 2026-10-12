@@ -1,0 +1,21 @@
+WORKFLOW: CODIGO AJUSTADO PARA DEMONSTRACAO (2026-10-11)
+
+Leia GUIA_PASSO_A_PASSO.md antes de usar. Nao substitua o codigo da dupla sem backup.
+
+FUNCIONALIDADES PHP:
+- Interface responsiva para celular e computador
+- Logout e configuracoes separados nas telas iniciais
+- CRUD: cadastro/listagem (ja existentes) mais editar e excluir turnos
+- Notificacoes internas para convite e resposta, com pagina e contador
+- Recuperacao de senha: tabelas corrigidas, tokens e fluxo; envio real depende de configurar mail()/SMTP
+
+REACT/PWA:
+- Interface React para login, turnos, convites, notificacoes, logout e configuracoes.
+- Cadastro, gerenciamento de funcionarios/perfil e recuperacao de senha continuam no PHP antigo.
+- Manifest, service worker simples e icones PWA. Internet/HTTPS necessarios para uso completo no celular.
+- Gerenciamento offline de turnos NAO implementado; servico e banco devem estar online.
+- Precisa executar npm install e npm run build para gerar a pasta app/.
+
+LIMITACOES:
+- Arquivos foram conferidos por sintaxe PHP, nao foi possivel testar interface ou MySQL real nesta maquina.
+- Nao publique a demo em internet aberta sem revisar autenticacao, HTTPS, servidor SMTP e seguranca.

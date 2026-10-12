@@ -461,3 +461,63 @@ img{
 .card.sem_urgencia {
     border-left: 8px solid #bdbdbd;
 }
+/* WORKFLOW 2026: responsividade e componentes novos */
+*, *::before, *::after { box-sizing: border-box; }
+html { max-width: 100%; }
+body { margin: 0; min-height: 100vh; }
+#grid { width: min(100%, 1120px); max-width: 1120px; min-height: 100dvh; margin: 0 auto; }
+#box, #boxperfil { width: min(100%, 740px); max-width: 740px; box-shadow: none; }
+#box { min-height: 100dvh; padding: 24px 16px; }
+#boxperfil { min-height: 100dvh; }
+main { min-width: 0; }
+input, select, textarea, button { font: inherit; max-width: 100%; }
+#form, #formTurno { width: 100%; }
+#form input, #form select, #formTurno input, #formTurno select, #formTurno textarea { width: 100%; }
+#form input[type=checkbox], #formTurno input[type=checkbox] { width: 18px; }
+#cadastro button, #submit { width: 100%; }
+.turnoContainer, .funcionarioContainer { min-width: 0; }
+.info { width: 100%; overflow-wrap: anywhere; }
+.card { min-width: 0; }
+.horario input { min-width: 0; }
+#novoTurno { position: fixed; bottom: 20px; right: max(20px, calc((100vw - 1120px)/2 + 30px)); margin: 0; }
+.nav-icone { position: relative; width: 52px; min-height: 48px; display: flex; align-items: center; justify-content: center; border: 0; background: none; cursor: pointer; }
+.nav-icone img { width: 25px; height: 25px; }
+.nav-contador { position: absolute; top: 0; right: 2px; background: #b91c1c; color: white; font-weight: bold; font-size: 11px; min-width: 19px; height: 19px; border-radius: 20px; display: grid; place-items: center; padding: 0 3px; }
+.acoes-turno { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.botao-acao { border: 0; border-radius: 9px; padding: 9px 13px; background: #dfdfdf; color: #161616; font-size: 14px; cursor: pointer; min-height: 42px; }
+.botao-perigo { background: #b91c1c; color: #fff; }
+.botao-acao:focus-visible, .nav-icone:focus-visible { outline: 3px solid #2563eb; }
+.aviso { background: white; border-left: 4px solid #444; border-radius: 5px; padding: 12px; margin: 8px 0; }
+.notificacao { padding: 14px; border-radius: 10px; background: #fff; margin-bottom: 12px; }
+.notificacao.nao-lida { border-left: 5px solid #1d4ed8; }
+.notificacao p { overflow-wrap: anywhere; }
+.notificacao form { margin-top: 10px; }
+@media (max-width: 650px) {
+  #grid { display: flex; flex-direction: column; }
+  aside, aside#sidenav { order: 0; position: sticky; top: 0; z-index: 10; min-height: unset; width: 100%; padding: 7px 6px; flex-direction: row; justify-content: space-around; gap: 2px; }
+  aside a, aside form { min-height: 44px; display: flex; align-items: center; }
+  main { order: 1; padding: 16px 14px 95px; gap: 16px; }
+  #boxperfil main { padding: 16px; }
+  #boxperfil header { padding: 0 14px; }
+  .turnoContainer { flex-direction: column; align-items: stretch; gap: 6px; }
+  .card { width: 100%; }
+  .action { flex-direction: row; gap: 10px; }
+  #aceitar, #recusar { width: 64px; height: 48px; }
+  .linha { flex-wrap: wrap; gap: 8px; }
+  #perfilbtn { width: auto; }
+  .horario { flex-wrap: wrap; }
+  .horario input { width: 35%; flex: 1; }
+  #novoTurno { right: 16px; bottom: 16px; }
+  .funcionario { min-width: 0; }
+  .dadosFuncionario { min-width: 0; overflow-wrap: anywhere; }
+  .btn { margin: 12px auto; }
+}
+@media (min-width: 651px) {
+  #grid { grid-template-columns: 76px minmax(0,1fr); }
+  aside { gap: 10px; }
+  #grid main { padding: 30px; }
+  .turnos { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+  .turnoContainer { align-items: stretch; }
+  #boxperfil { margin: 30px auto; }
+  #box { margin: 30px auto; min-height: auto; }
+}
