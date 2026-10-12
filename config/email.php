@@ -3,10 +3,14 @@
 define('WORKFLOW_DEMO_RESET', false);
 // Arquivo local nao versionado: config/email.local.php define variaveis SMTP.
 if (is_file(__DIR__ . '/email.local.php')) require __DIR__ . '/email.local.php';
+
 function enviarEmailRecuperacao($email, $url) {
     $texto = "Voce solicitou a troca de senha do WorkFlow.\n\nAbra o link (valido por 30 minutos):\n" . $url . "\n\nSe nao foi voce, ignore este email.";
     $vendor = __DIR__ . '/../vendor/autoload.php';
-    if (is_file($vendor) && defined('WORKFLOW_SMTP_HOST') && class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+    if (is_file($vendor)) {
+        require_once $vendor;
+    }
+    if (defined('WORKFLOW_SMTP_HOST') && class_exists(\PHPMailer\PHPMailer\PHPMailer::Class)) {
         try {
             $mailer = new \PHPMailer\PHPMailer\PHPMailer(true);
             $mailer->isSMTP();
@@ -24,7 +28,7 @@ function enviarEmailRecuperacao($email, $url) {
             return $mailer->send();
         } catch (Throwable $e) { error_log('WorkFlow SMTP: ' . $e->getMessage()); return false; }
     }
-    return mail($email, 'WorkFlow - recuperar senha', $texto, 'From: no-reply@exemplo.com');
+    return mail($email, 'WorkFlow - recuperar senha', $texto, 'From: no-reply@WorkFlow.com');
 }
 function ambienteDemoLocal() {
     return WORKFLOW_DEMO_RESET && in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1','::1'], true);
