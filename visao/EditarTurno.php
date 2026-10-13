@@ -12,7 +12,8 @@ if (!$turno) { http_response_code(404); die('Turno nao encontrado ou sem permiss
 <input type="hidden" name="turno_id" value="<?php echo (int)$turno['id']; ?>"><input type="hidden" name="csrf_token" value="<?php echo esc(tokenCsrf()); ?>">
 <p>Empresa: <strong><?php echo esc($turno['empresa_nome']); ?></strong></p>
 <div class="campo"><label for="data">Data</label><input id="data" type="date" name="data" required value="<?php echo esc($turno['data_turno']); ?>"></div>
-<div class="campo"><label for="inicio">Horário</label><input id="inicio" type="time" name="inicio" required value="<?php echo esc(substr($turno['horario_inicio'],0,5)); ?>"></div>
+<div class="campo"><label for="inicio">Horário de início</label><input id="inicio" type="time" name="inicio" required value="<?php echo esc(substr($turno['horario_inicio'],0,5)); ?>"></div>
+<div class="campo"><label for="fim">Horário de término</label><input id="fim" type="time" name="fim" required value="<?php echo esc(substr($turno['horario_fim'] ?? '',0,5)); ?>"></div>
 <div class="campo"><label for="cargo">Função</label><input id="cargo" type="text" maxlength="50" name="cargo" required value="<?php echo esc($turno['funcao']); ?>"></div>
 <div class="campo"><label for="valor">Valor (R$)</label><input id="valor" type="number" min="0" step="0.01" name="valor" required value="<?php echo esc($turno['valor']); ?>"></div>
 <div class="campo"><label for="descricao">Descrição</label><textarea id="descricao" maxlength="150" name="descricao" required><?php echo esc($turno['descricao']); ?></textarea></div>

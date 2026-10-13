@@ -22,7 +22,7 @@ $listaLojas = retornarEmpresasDoDono($dono_id);
 <body>
     <section id="boxperfil">
         <header>
-            <a href="PaginaInicialDono.php">
+            <a href="../app/">
                 <img src="../imgs/gravity-ui--arrow-left.svg">
             </a>
             <h3>Meu perfil</h3>

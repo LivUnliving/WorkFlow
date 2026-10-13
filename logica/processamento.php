@@ -236,7 +236,7 @@ if (isset($_POST['btn_editar_turno']) || isset($_POST['btn_excluir_turno'])) {
     if (isset($_POST['btn_editar_turno'])) {
         $ok = atualizarTurnoDoDono($turno_id, $dono_id, [
             'descricao'=>$_POST['descricao']??'', 'data_turno'=>$_POST['data']??'',
-            'horario_inicio'=>$_POST['inicio']??'', 'valor'=>$_POST['valor']??'', 'funcao'=>$_POST['cargo']??''
+            'horario_inicio'=>$_POST['inicio']??'', 'horario_fim'=>$_POST['fim']??'', 'valor'=>$_POST['valor']??'', 'funcao'=>$_POST['cargo']??''
         ]);
     } else {
         $ok = excluirTurnoDoDono($turno_id, $dono_id);
