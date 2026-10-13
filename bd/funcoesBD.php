@@ -2,7 +2,7 @@
 // bd/funcoesBD.php
 
 function conectarBD() {
-    $conexao = mysqli_connect("localhost", "root", "", "gestao_freelas", 3306);
+    $conexao = mysqli_connect("localhost", "root", "", "gestao_freelas", 3307);
 
     if (!$conexao) {
         die("Falha na conexão com o Banco de Dados: " . mysqli_connect_error());
@@ -534,12 +534,12 @@ function atualizarTurnoDoDono($turno_id, $dono_id, $dados) {
     $hora_fim = $dados['horario_fim'] ?? '';
     $valor = (float)($dados['valor'] ?? -1);
     $d = DateTimeImmutable::createFromFormat('!Y-m-d', $data);
-    if (!$d || $d->format('Y-m-d') !== $data || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora_inicio,0,5)) || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora_inicio,0,5))
+    if (!$d || $d->format('Y-m-d') !== $data || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora_inicio,0,5)) || !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', substr($hora_fim,0,5))
         || $descricao === '' || mb_strlen($descricao)>150 || $funcao === '' || mb_strlen($funcao)>50 || $valor < 0) return false;
    
     $c = conectarBD();
     $st = mysqli_prepare($c, 'UPDATE turnos t INNER JOIN empresas e ON e.id=t.empresa_id SET t.descricao=?, t.data_turno=?, t.horario_inicio=?, t.horario_fim=?, t.valor=?, t.funcao=? WHERE t.id=? AND e.dono_id=?');
-    mysqli_stmt_bind_param($st, 'sssdsii', $descricao, $data, $hora_inicio, $hora_fim, $valor, $funcao, $turno_id, $dono_id);
+    mysqli_stmt_bind_param($st, 'ssssdsii', $descricao, $data, $hora_inicio, $hora_fim, $valor, $funcao, $turno_id, $dono_id);
     $ok = mysqli_stmt_execute($st);
     if ($ok) {
         $r = mysqli_query($c, 'SELECT freelancer_id FROM candidaturas WHERE turno_id=' . (int)$turno_id);

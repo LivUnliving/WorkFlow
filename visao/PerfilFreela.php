@@ -24,7 +24,7 @@ $listaExperiencias = retornarExperienciasDoFreelancer($freelancer_id);
 <body>
     <section id="boxperfil">
         <header>
-            <a href="PaginaInicialFreela.php">
+            <a href="../app/">
                 <img src="../imgs/gravity-ui--arrow-left.svg">
             </a>
             <h3>Meu perfil</h3>
